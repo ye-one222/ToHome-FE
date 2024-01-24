@@ -1,11 +1,10 @@
-import { MainPage } from './app/main.tsx';
 import './App.css';
-import { FishRouter } from './router/index.tsx';
+import { HomeRouter } from './router/index.tsx';
 
 function App() {
   return (
     <div className="ToHome">
-      <FishRouter />
+      <HomeRouter />
     </div>
   );
 }

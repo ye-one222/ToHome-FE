@@ -2,10 +2,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import React from "react";
 import { MainPage } from "../app/main.tsx"
 import { MyPage } from "../app/myPage.tsx"
-//import { RouterProvider } from "react-router-dom";
 
-export type FishRouterPath = '/' | '/download' 
-const fishRouter = createBrowserRouter([
+export type HomeRouterPath = '/' | '/download' 
+const homeRouter = createBrowserRouter([
     {
         path: '/',
         element: <MainPage />,
@@ -17,5 +16,5 @@ const fishRouter = createBrowserRouter([
 ])
 
 // eslint-disable-next-line react/jsx-no-undef
-export const FishRouter = () => <RouterProvider router={fishRouter} />
+export const HomeRouter = () => <RouterProvider router={homeRouter} />
 
