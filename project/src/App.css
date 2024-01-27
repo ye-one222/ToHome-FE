@@ -1,4 +1,13 @@
-.App {
+.MainCSS {
+  background-color: #F8FBF4;
+  min-height: 100vh;
+  display: flex;  
+  flex-direction: column;
+  color: #27416D;
+  height: 100vh;
+}
+
+/*.App {
   text-align: center;
 }
 
@@ -36,3 +45,4 @@
     transform: rotate(360deg);
   }
 }
+*/
