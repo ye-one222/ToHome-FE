@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Link } from "react-router-dom"
 
 const TopCard = () => {
+    //이렇게 받는지, 아이디만 받아서 id.contents 같이 써야하는지 모르겠음
     const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
     const [summary, setSummary] = useState('');
@@ -10,6 +11,7 @@ const TopCard = () => {
     const [user, setUser] = useState('');
 
     //fetch로 GET 요청 -> 각각 저장
+
     //tag 파싱하는 함수 필요할듯
 
     return (
@@ -50,7 +52,25 @@ const TopCard = () => {
 }
 
 const RecipeCard = () => {
-    
+    const [imgUrl, setImgUrl] = useState('');
+    const [title, setTitle] = useState('');
+    const [user, setUser] = useState('');
+
+    //fetch로 GET 요청 -> 각각 저장
+
+    return (
+        <div className="flex flex-col">
+            <div className="w-[245px] h-[245px] bg-[#f1f2f0] rounded-[20px]">
+                {/* 사진 자리 - 나중에 이걸로 교체
+                <img src={imgUrl} alt="Photo" className="w-[245px] h-[245px] rounded-[20px]" />
+                */}
+            </div>
+            <div className="flex justify-between items-end">
+                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">title</h1>
+                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">username</div>
+            </div>
+        </div>
+    )
 }
 
 export const MainPage:React.FC = ()=>{
@@ -68,6 +88,14 @@ export const MainPage:React.FC = ()=>{
             <button className="h-[42px]">
                 <img src={rightBtnUrl} alt="rightBtn" />
             </button>
+        </div>
+
+        {/* 레시피들 3열 */}
+        <div className="mt-5 grid grid-cols-3 gap-4">
+            <RecipeCard />
+            <RecipeCard />
+            <RecipeCard />
+            <RecipeCard />
         </div>
     </div>
     )
