@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Link } from "react-router-dom"
+import { Menu } from "../interface/menu.tsx";
 
 const TopCard = () => {
     //이렇게 받는지, 아이디만 받아서 id.contents 같이 써야하는지 모르겠음
@@ -79,6 +80,8 @@ export const MainPage:React.FC = ()=>{
 
     return (
     <div className="flex flex-col items-center">
+        <Menu/>
+
         {/* 상단 명예의 전당 */}
         <div className="flex mt-10 items-center gap-2">
             <button className="h-[42px]">
