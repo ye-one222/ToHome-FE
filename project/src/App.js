@@ -3,7 +3,7 @@ import { HomeRouter } from './router/index.tsx';
 
 function App() {
   return (
-    <div className="ToHome">
+    <div className="MainCSS">
       <HomeRouter />
     </div>
   );
