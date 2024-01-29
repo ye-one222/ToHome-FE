@@ -1,16 +1,16 @@
-import React, { useState } from "react"
-import { Link } from "react-router-dom"
+import React, {  } from "react"
+//import { Link } from "react-router-dom"
 import { Menu } from "../interface/menu.tsx";
 
 const TopCard = () => {
     //이렇게 받는지, 아이디만 받아서 id.contents 같이 써야하는지 모르겠음
-    const [imgUrl, setImgUrl] = useState('');
+    /*const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
     const [summary, setSummary] = useState('');
     const [contents, setContents] = useState('');
     const [tags, setTags] = useState([]);
     const [user, setUser] = useState('');
-
+*/
     //fetch로 GET 요청 -> 각각 저장
 
     //tag 파싱하는 함수 필요할듯
@@ -53,10 +53,10 @@ const TopCard = () => {
 }
 
 const RecipeCard = () => {
-    const [imgUrl, setImgUrl] = useState('');
+    /*const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
     const [user, setUser] = useState('');
-
+*/
     //fetch로 GET 요청 -> 각각 저장
 
     return (

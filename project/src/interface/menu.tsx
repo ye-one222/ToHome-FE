@@ -40,7 +40,7 @@ export const Menu = (): JSX.Element => {
                 </div>
             </div>
 
-            <img src={postImgUrl} className="mt-[40px]"/>
+            <img src={postImgUrl} alt = "postImgUrl" className="mt-[40px]"/>
         </div>
     );
 };
