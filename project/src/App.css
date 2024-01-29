@@ -6,6 +6,15 @@
   font-family: "Montserrat";
 }
 
+.MainCSS {
+  background-color: #F8FBF4;
+  min-height: 100vh;
+  display: flex;  
+  flex-direction: column;
+  color: #27416D;
+  /*height: 100vh;*/
+}
+
 .LoginInput::placeholder{
   font-weight: 500;
   white-space: nowrap;
@@ -20,3 +29,4 @@
   font-family: "Montserrat";
   src: url("../public/font/static/Montserrat-Light.ttf");
 }
+
