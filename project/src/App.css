@@ -1,3 +1,11 @@
+
+.LoginPageBg {
+  background-color: #DCECCB;
+  color: #507e1f;
+  height: 100vh;
+  font-family: "Montserrat";
+}
+
 .MainCSS {
   background-color: #F8FBF4;
   min-height: 100vh;
@@ -7,42 +15,18 @@
   /*height: 100vh;*/
 }
 
-/*.App {
-  text-align: center;
+.LoginInput::placeholder{
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.LoginInput{
+  z-index: 30;
+  outline: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+@font-face {
+  font-family: "Montserrat";
+  src: url("../public/font/static/Montserrat-Light.ttf");
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-*/
