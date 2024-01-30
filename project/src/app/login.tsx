@@ -14,6 +14,7 @@ export const LoginPage:React.FC = () => {
     const handleLoginBtn = () => {
         //로그인 버튼 눌렀을때
     }
+
     return <div className="LoginPageBg flex justify-center">
         <div>
             <img className="absolute top-0 right-0 max-h-full z-0" alt="LoginFlower" src="/img/loginFlower.svg"/>
@@ -30,7 +31,7 @@ export const LoginPage:React.FC = () => {
                     onChange={handleID}
                     type="text" 
                     placeholder="ID" 
-                    className="LoginInput z-30 font-semibold w-full"/>
+                    className="LoginInput font-semibold w-full"/>
 
             </div>
             <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md">
@@ -39,7 +40,7 @@ export const LoginPage:React.FC = () => {
                     onChange={handlePW}
                     type="text" 
                     placeholder="password" 
-                    className="LoginInput z-30 font-semibold w-full"/>
+                    className="LoginInput font-semibold w-full"/>
                 
             </div>
             <button onClick = {handleLoginBtn} className="bg-white h-[50px] w-full z-30 rounded-md border hover:border-[#507e1f] transition-all">LOG IN</button>
