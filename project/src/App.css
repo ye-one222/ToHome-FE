@@ -1,11 +1,3 @@
-
-.LoginPageBg {
-  background-color: #DCECCB;
-  color: #507e1f;
-  height: 100vh;
-  font-family: "Montserrat";
-}
-
 .MainCSS {
   background-color: #F8FBF4;
   min-height: 100vh;
@@ -13,6 +5,13 @@
   flex-direction: column;
   color: #27416D;
   /*height: 100vh;*/
+}
+
+.LoginPageBg {
+  background-color: #DCECCB;
+  color: #507e1f;
+  height: 100vh;
+  font-family: 'Montserrat';
 }
 
 .LoginInput::placeholder{
@@ -26,7 +25,13 @@
 }
 
 @font-face {
-  font-family: "Montserrat";
+  font-family: 'Montserrat';
   src: url("../public/font/static/Montserrat-Light.ttf");
+}
+
+.MenuCSS{
+  color: #507e1f;
+  font-weight: 600;
+  font-family: 'Montserrat';
 }
 

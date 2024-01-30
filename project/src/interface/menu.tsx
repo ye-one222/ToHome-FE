@@ -1,5 +1,6 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, {  } from "react";
+import '../tailwind.css';
+import {  NavLink } from "react-router-dom";
 
 export const Menu = (): JSX.Element => {
     const logoUrl = '/img/logo.png';
@@ -11,24 +12,28 @@ export const Menu = (): JSX.Element => {
         { name: "My", path: "/mypage"} //나중에는 아마 사용자 id 들어가야 할듯
       ];
 
+    
     return (
-        <div className="flex flex-col items-center fixed top-[20px] left-[30px] w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
+        <div className="MenuCSS flex flex-col items-center absolute right-3/4 bottom-1/4 md:w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
             <div className="flex flex-row items-center justify-center mt-[20px] w-[175px] h-[114px] bg-[#f6ffee] rounded-[50px]">
-                <h1 className="ml-5 text-[#507d1f] text-[30px] text-center">To Home</h1>
+                <h1 className="ml-5 text-[30px] text-center">To Home</h1>
                 <img src={logoUrl} alt="logo" className="w-[88px] h-[83px]"/>
             </div>
 
-            <div className="flex flex-col mt-5 gap-4">
+            <div className="flex flex-col mt-5 gap-4 ">
                 {menus.map((menu, index) => {
                     return (
                         <NavLink
                             to={menu.path}
                             key={index}
-                            className="bg-gray"
                         >
-                            <div className="w-[106px] text-[#507d1f] text-[25px] tracking-[0] whitespace-nowrap">
-                                {menu.name}
+                            <div className="flex flex-row items-center justify-center gap-3">
+                                <img className="w-[24px] " alt={menu.name} src={`/img/menuBar/${menu.name}MenuIcon.png`}/>
+                                <div className="w-[106px] text-[25px] tracking-[0] whitespace-nowrap">
+                                    {menu.name}
+                                </div>
                             </div>
+                            
                         </NavLink>
                     )
                 })}
