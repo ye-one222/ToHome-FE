@@ -14,7 +14,7 @@ export const Menu = (): JSX.Element => {
 
     
     return (
-        <div className="MenuCSS flex flex-col items-center absolute right-3/4 bottom-1/4 md:w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
+        <div className="MenuCSS flex flex-col items-center absolute right-3/4 top-5 md:w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
             <div className="flex flex-row items-center justify-center mt-[20px] w-[175px] h-[114px] bg-[#f6ffee] rounded-[50px]">
                 <h1 className="ml-5 text-[30px] text-center">To Home</h1>
                 <img src={logoUrl} alt="logo" className="w-[88px] h-[83px]"/>
