@@ -4,6 +4,8 @@ import { MainPage } from "../app/main.tsx"
 import { MyPage } from "../app/myPage.tsx"
 import { LoginPage } from '../app/login.tsx';
 import { SignupPage } from '../app/signup.tsx';
+import { HouseMainPage } from '../app/houseMain.tsx';
+import { SearchMainPage } from '../app/searchMain.tsx';
 
 export type HomeRouterPath = '/' | '/download' 
 const homeRouter = createBrowserRouter([
@@ -23,7 +25,14 @@ const homeRouter = createBrowserRouter([
         path:'/signup',
         element: <SignupPage />,
     },
-    
+    {
+        path:'/house',
+        element: <HouseMainPage />,
+    },
+    {
+        path:'/search',
+        element: <SearchMainPage />,
+    },
 ])
 
 // eslint-disable-next-line react/jsx-no-undef
