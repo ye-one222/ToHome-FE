@@ -23,7 +23,10 @@ const homeRouter = createBrowserRouter([
         path:'/signup',
         element: <SignupPage />,
     },
-    
+    {
+        path:'/house',
+        element: <MyPage />,
+    },
 ])
 
 // eslint-disable-next-line react/jsx-no-undef
