@@ -60,7 +60,8 @@ export const SearchMainPage:React.FC = ()=>{
         <Menu/>
 
         {/* 상단 필터 박스 */}
-        <div className="flex mt-10 items-center gap-2">
+        <div className="flex flex-col mt-10 items-center gap-2">
+            <p className="text-[#507E1F] text-[15px]">레시피에 사용될 재료를 선택하세요.</p>
             <FilterCard />
         </div>
 
