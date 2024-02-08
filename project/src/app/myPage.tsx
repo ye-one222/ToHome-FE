@@ -121,7 +121,7 @@ export const MyPage:React.FC = ()=>{
             </div>
         </div>
         
-        <div className="absolute top-[180px] w-1/2  ml-10 ">
+        <div className="absolute left-[27%] top-[180px] w-1/2 ">
 
             <div className="flex bg-white rounded-[30px] w-full h-[120px] text-[30px]">
                 <button onClick={ () => {setIsMyRecipe(true); setIsScrap(false); } } 
