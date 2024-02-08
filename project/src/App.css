@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: flex;  
   flex-direction: column;
-  color: #27416D;
+  font-family: 'Montserrat';
   /*height: 100vh;*/
 }
 
@@ -11,7 +11,6 @@
   background-color: #DCECCB;
   color: #507e1f;
   height: 100vh;
-  font-family: 'Montserrat';
 }
 
 .LoginInput::placeholder{
@@ -32,6 +31,32 @@
 .MenuCSS{
   color: #507e1f;
   font-weight: 600;
-  font-family: 'Montserrat';
 }
 
+.MyPageEditInput{
+  background-color: #F8FBF4;
+  border-radius: 30px;
+  width: 70%;
+  height: 53px;
+  padding: 3px;
+  padding-left: 15px;
+  outline: none;
+}
+
+.CheckSameBefore{
+  background-color: white;
+  border-width: 1px;
+  border-color: #DCECCB;
+  border-radius: 20px;
+  color: #507e1f;
+  padding: 3px;
+  font-size: small;
+}
+
+.CheckSameAfter{
+  background-color: rgb(244 244 245 / var(--tw-bg-opacity));;
+  border-radius: 20px;
+  color: rgb(161 161 170 / var(--tw-bg-opacity));
+  padding: 3px;
+  font-size: small;
+}
