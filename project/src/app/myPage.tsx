@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Menu } from "../interface/menu.tsx";
 
 
@@ -104,11 +104,11 @@ export const MyPage:React.FC = ()=>{
         }
         if( event.target.files[0]){
             reader.readAsDataURL(event?.target.files[0])
-            setImgFile(event.target.files[0])
-            console.log(event.target.files[0])
+            setImgFile( event.target.files[0].name )
             
         }
     }
+
     return <div className="MainCSS flex flex-col items-center">
 
         <Menu />
@@ -183,7 +183,7 @@ export const MyPage:React.FC = ()=>{
                     <div className="flex flex-col gap-5 max-h-[500px]">
                         <div className="flex gap-4 mt-5">
                             <img
-                            src={ imgFile ? imgFile:`/img/logo.png` }
+                            src={ imgFile ? `/img/select/${imgFile}`:`/img/logo.png` }
                             alt='myProfile' 
                             className="w-1/3 max-w-[200px] border border-[#DEF0CA] rounded-md"/>
                             <div className="flex flex-col">
