@@ -4,6 +4,8 @@ import { MainPage } from "../app/main.tsx"
 import { MyPage } from "../app/myPage.tsx"
 import { LoginPage } from '../app/login.tsx';
 import { SignupPage } from '../app/signup.tsx';
+import { HouseMainPage } from '../app/houseMain.tsx';
+import { SearchMainPage } from '../app/searchMain.tsx';
 import { PostPage } from '../app/post.tsx';
 
 export type HomeRouterPath = '/' | '/download' 
@@ -26,7 +28,11 @@ const homeRouter = createBrowserRouter([
     },
     {
         path:'/house',
-        element: <MyPage />,
+        element: <HouseMainPage />,
+    },
+    {
+        path:'/search',
+        element: <SearchMainPage />,
     },
     {
         path:'/post',
