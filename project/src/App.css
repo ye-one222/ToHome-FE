@@ -21,6 +21,8 @@
 .LoginInput{
   z-index: 30;
   outline: none;
+  font-weight: 600;
+  width: 100%;
 }
 
 @font-face {

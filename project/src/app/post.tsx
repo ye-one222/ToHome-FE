@@ -11,8 +11,9 @@ export const PostPage:React.FC = () => {
     const bestSource = ['플라스틱','유리','나무']
 
     const LocatePhotos = (photosrc) => {
-        return <div >
-            <img src={`/img/select/${photosrc}`} alt="photos" className="flex items-center justify-center w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
+        //이미지 주소 복사 할때의 그 주소를 넣으면 되긴함
+        return <div>
+            <img src={`/img/select/${photosrc}`} alt="photos" className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
         </div>
     }
 
@@ -34,7 +35,6 @@ export const PostPage:React.FC = () => {
         }
     }
 
-    
     return <div className="flex items-center justify-center">
         <Menu />
 
@@ -49,7 +49,7 @@ export const PostPage:React.FC = () => {
         <div className="absolute top-[93px] w-[50%] flex-col lg:items-center lg:justify-center lg:w-[40%] bg-white rounded-[50px] p-10">
             
             <div className="flex flex-row overflow-x-auto gap-5">
-                {photosSrc.map( (each) => LocatePhotos(each) )}
+                { photosSrc.map( (each) => LocatePhotos(each) ) }
                 <label
                 htmlFor="photoInput"
                 className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px] hover:bg-[#DBDCDB] transition-all">+</label>
@@ -79,13 +79,18 @@ export const PostPage:React.FC = () => {
             <div>
                 <div className="mt-10 bg-[#F8FBF4] rounded-[30px] border-b border-b-[#73974C] p-10">
                     <h1 className="text-[30px] text-[#507E1F]">사용 재료</h1>
-                    <div className="h-[40px] overflow-x-auto"/*x바에 스크롤 만들고 싶어 ㅠㅠㅠㅠ */>
-                    {sourceAry.map((each) => {
-                        return <button 
-                        onClick={ () => {/*each를 이 배열에서 제거 */} }
-                        className="bg-[#507E1F] text-white rounded-[30px] p-2 mr-3">
-                            {each}
-                        </button>
+                    <div className="flex overflow-x-auto ">
+                    {sourceAry.map((each, index) => {
+                        return <div className="flex items-center gap-2 h-[40px] bg-[#507E1F] text-white rounded-[30px] p-2 mr-3 whitespace-nowrap">
+                            <div>{each}</div>
+                            <button 
+                            onClick={ () => 
+                                { setSourceAry(
+                                    sourceAry.filter( function(_, indexx) { return index !== indexx } )
+                                ) } 
+                            } 
+                            className=" text-red-200 hover:text-red-300">x</button>
+                        </div>
                     })}
                     </div>
                 </div>
@@ -95,19 +100,20 @@ export const PostPage:React.FC = () => {
                     type="text"
                     onChange={(event) => { setAddSourceInput(event?.target.value) }}
                     placeholder="사용 재료를 입력하세요"
+                    value={ addSourceInput }
                     className="text-[#507E1F] bg-[#DEF0CA] rounded-[30px] pl-5 h-[40px] placeholder:text-[#507E1F] focus:outline-none"/>
                     
                     <button 
-                    onClick={() => { setSourceAry([...sourceAry, addSourceInput]) }} 
-                    className="bg-[#B4CE97] h-[40px] rounded-[30px] text-[15px] text-[#507E1F] p-1">
+                    onClick={() => { setSourceAry([...sourceAry, addSourceInput]); setAddSourceInput('') }} 
+                    className="bg-[#B4CE97] h-[40px] w-[50px] rounded-[30px] text-[15px] text-[#507E1F] p-1">
                         추가
                     </button>
                     
                     <div className="flex flex-row gap-3 mt-5">
                     {bestSource.map((each) => {
-                        return <div className="bg-[#507E1F] text-white rounded-[30px] p-2">
+                        return <button onClick={() => { setSourceAry([...sourceAry, each]) }} className="bg-[#507E1F] text-white rounded-[30px] p-2">
                             {each}
-                        </div>
+                        </button>
                     })}
                     </div>
                 </div>
