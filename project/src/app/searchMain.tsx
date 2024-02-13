@@ -4,7 +4,7 @@ import { Menu } from "../interface/menu.tsx";
 
 const FilterCard = () => {
     const tags = ['플라스틱', '스티로폼', '캔', '비닐', '종이']; //나중에 더 추가
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     return (
         <div className="grid grid-cols-2 items-center w-[650px] h-[200px] bg-[#a0d4684c] rounded-[78px] p-6">

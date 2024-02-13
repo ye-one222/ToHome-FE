@@ -54,7 +54,7 @@ const HouseCard = () => {
 
     return (
         <div className="flex flex-col">
-            <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px]">
+            <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400">
                 {/* 사진 자리 - 나중에 이걸로 교체
                 <img src={imgUrl} alt="Photo" className="w-[245px] h-[245px] rounded-[20px]" />
                 */}
