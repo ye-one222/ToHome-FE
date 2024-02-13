@@ -7,6 +7,7 @@ import { SignupPage } from '../app/signup.tsx';
 import { HouseMainPage } from '../app/houseMain.tsx';
 import { SearchMainPage } from '../app/searchMain.tsx';
 import { PostPage } from '../app/post.tsx';
+import { RecipeDetailPage } from '../app/detail/[id]/recipePage.tsx';
 
 export type HomeRouterPath = '/' | '/download' 
 const homeRouter = createBrowserRouter([
@@ -37,6 +38,10 @@ const homeRouter = createBrowserRouter([
     {
         path:'/post',
         element: <PostPage />,
+    },
+    {
+        path:'/recipe/1', //일단 임시로
+        element: <RecipeDetailPage />,
     },
 ])
 
