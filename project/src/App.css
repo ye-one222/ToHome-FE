@@ -62,3 +62,11 @@
   padding: 3px;
   font-size: small;
 }
+
+.Try{
+  width: 150px;
+  height: 200px;
+  background-color: red;
+  position: absolute;
+  
+}
