@@ -45,7 +45,7 @@ const TopCard = () => {
     )
 }
 
-const HouseCard = () => {
+const HouseCard = ({ post_id, title, username }) => {
     /*const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
     const [user, setUser] = useState('');
@@ -60,8 +60,8 @@ const HouseCard = () => {
                 */}
             </div>
             <div className="flex justify-between items-end">
-                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">title</h1>
-                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">username</div>
+                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">{title}</h1>
+                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">{username}</div>
             </div>
         </div>
     )
@@ -70,6 +70,33 @@ const HouseCard = () => {
 export const HouseMainPage:React.FC = ()=>{
     const leftBtnUrl = '/img/leftBtn.png';
     const rightBtnUrl = '/img/rightBtn.png';
+    const houses = [
+        {   
+            post_id: 1,
+            title: 'HouseTitle1',
+            username: 'User1'
+        },
+        {
+            post_id: 2,
+            title: 'HouseTitle2',
+            username: 'User2'
+        },
+        {
+            post_id: 3,
+            title: 'HouseTitle3',
+            username: 'User3'
+        },
+        {
+            post_id: 4,
+            title: 'HouseTitle4',
+            username: 'User4'
+        },
+        {
+            post_id: 5,
+            title: 'HouseTitle5',
+            username: 'User5'
+        },
+    ]
 
     return (
     <div className="flex flex-col items-center">
@@ -88,10 +115,11 @@ export const HouseMainPage:React.FC = ()=>{
 
         {/* 집 사진들 3열 */}
         <div className="mt-5 grid grid-cols-3 gap-3">
-            <HouseCard />
-            <HouseCard />
-            <HouseCard />
-            <HouseCard />
+            {houses.map((each, index) => {
+                return (
+                    <HouseCard key={index} {...each}/>
+                )
+            })}
         </div>
     </div>
     )

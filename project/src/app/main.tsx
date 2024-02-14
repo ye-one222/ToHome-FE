@@ -59,6 +59,33 @@ const RecipeCard = ({ post_id, title, username }) => {
     const [user, setUser] = useState('');
 */
     //fetch로 GET 요청 -> 각각 저장
+    const topRecipes = [
+        {   
+            post_id: 1,
+            title: 'BEST RECIPE1',
+            username: 'User1'
+        },
+        {
+            post_id: 2,
+            title: 'BEST RECIPE2',
+            username: 'User2'
+        },
+        {
+            post_id: 3,
+            title: 'BEST RECIPE3',
+            username: 'User3'
+        },
+        {
+            post_id: 4,
+            title: 'BEST RECIPE4',
+            username: 'User4'
+        },
+        {
+            post_id: 5,
+            title: 'BEST RECIPE5',
+            username: 'User5'
+        },
+    ]
 
     return (
         <Link to='/recipe/1'>
