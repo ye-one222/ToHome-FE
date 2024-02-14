@@ -23,21 +23,33 @@ export const Menu = (): JSX.Element => {
 
             <div className="flex flex-col mt-5 gap-4 ">
                 {menus.map((menu, index) => {
-                    return (
-                        <NavLink
-                            to={menu.path}
-                            key={index}
-                            className={({ isActive }) =>  { return isActive ? 'text-white rounded-lg bg-[#507e1f]' : ''}}
-                        >
-                            <div className="flex flex-row items-center justify-center gap-3">
+                    if( menu.name === "My" && !IsLogin )
+                    {
+                        return (<button onClick={ () => { alert("로그인을 해주세요!") } } className="flex flex-row items-center justify-center gap-3">
                                 <img className="w-[24px] " alt={menu.name} src={`/img/menuBar/${menu.name}MenuIcon.png`}/>                           
-                                <div className="w-[106px] text-[25px] tracking-[0] whitespace-nowrap">
+                                <div className=" w-[106px] text-[25px] border border-[#DEF0CA] rounded-lg hover:border-white transition-all">
                                     {menu.name}
                                 </div>
-                            </div>
-                            
-                        </NavLink>
-                    )
+                            </button>)
+                    }
+                    else
+                    {
+                        return (
+                        <div className="flex items-center justify-center gap-3">
+                            <img className="w-[24px] " alt={menu.name} src={`/img/menuBar/${menu.name}MenuIcon.png`}/> 
+                            <NavLink
+                                to={menu.path}
+                                key={index}
+                                className={({ isActive }) =>  { return isActive ? 'text-white rounded-lg bg-[#507e1f] w-full' : ''}}
+                            >                           
+                                <div className="flex flex-row items-center justify-center w-[106px] text-[25px] border border-[#DEF0CA] rounded-lg hover:border-[#507e1f] transition-all">
+                                    {menu.name}
+                                </div>
+                            </NavLink>
+                        </div>
+                        )
+                    }
+                    
                 })}
             </div>
             <div className="flex h-[200px] items-center">
@@ -50,9 +62,9 @@ export const Menu = (): JSX.Element => {
                         Sign Up
                     </button></Link>
                 </div>:
-                <button onClick={() => { setIsLogin(false)}} className="flex justify-center w-[172px] py-[12px] bg-[#B4CE97] text-[white] rounded-[8px] hover:text-[#507e1f] transition-all">
+                <Link to={'/'}><button onClick={() => { setIsLogin(false)}} className="flex justify-center w-[172px] py-[12px] bg-[#B4CE97] text-[white] rounded-[8px] hover:text-[#507e1f] transition-all">
                         Logout
-                </button>
+                </button></Link>
                 }
             </div>
             

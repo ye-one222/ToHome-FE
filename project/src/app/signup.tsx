@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 
 export const SignupPage:React.FC = () => {
+    //fetch()
     const [password,setPassword] = useState<string|null>(null)
     
     const handleMailInput = () => {
@@ -36,7 +37,7 @@ export const SignupPage:React.FC = () => {
                 onChange={handleMailInput}
                 type="text" 
                 placeholder="E-Mail" 
-                className="LoginInput z-30 font-semibold w-full"/>
+                className="LoginInput"/>
         </div>
         <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
             <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/guest.png"/>
@@ -44,21 +45,29 @@ export const SignupPage:React.FC = () => {
                 onChange={handleIDInput}
                 type="text" 
                 placeholder="ID" 
-                className="LoginInput z-30 font-semibold w-full"/>
+                className="LoginInput"/>
         </div>
-        <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-1">
+        <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-2">
+            <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/guest.png"/>
+            <input 
+                type="text" 
+                placeholder="NAME" 
+                className="LoginInput"/>
+        </div>
+        <div className="h-[16px] ml-auto text-xs font-extralight">
+            {password ? 'Vaild Form!':
+                <h1>비밀번호 자리수: 8~15 자리</h1>
+            }
+        </div>
+        <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
             <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/lock.png"/>
             <input 
                 onChange={handlePwInput}
                 type="text" 
                 placeholder="password" 
-                className="LoginInput z-30 font-semibold w-full"/>
+                className="LoginInput"/>
         </div>
-        <div className="h-[16px] ml-auto text-xs font-extralight mb-1">
-            {password ? '':
-                <h1>비밀번호 자리수: 8~15 자리</h1>
-            }
-        </div>
+        
         <button className="bg-white h-[50px] w-full z-30 rounded-md mb-4 border hover:border-[#507e1f] transition-all">SIGN UP</button>
     </div>
     

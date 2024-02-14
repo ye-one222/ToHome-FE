@@ -21,6 +21,8 @@
 .LoginInput{
   z-index: 30;
   outline: none;
+  font-weight: 600;
+  width: 100%;
 }
 
 @font-face {
@@ -59,4 +61,12 @@
   color: rgb(161 161 170 / var(--tw-bg-opacity));
   padding: 3px;
   font-size: small;
+}
+
+.Try{
+  width: 150px;
+  height: 200px;
+  background-color: red;
+  position: absolute;
+  
 }
