@@ -53,7 +53,7 @@ const TopCard = () => {
     )
 }
 
-const RecipeCard = () => {
+const RecipeCard = ({ post_id, title, username }) => {
     /*const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
     const [user, setUser] = useState('');
@@ -69,8 +69,8 @@ const RecipeCard = () => {
                 */}
             </div>
             <div className="flex justify-between items-end">
-                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">title</h1>
-                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">username</div>
+                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">{title}</h1>
+                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">{username}</div>
             </div>
         </div>
         </Link>
@@ -80,6 +80,33 @@ const RecipeCard = () => {
 export const MainPage:React.FC = ()=>{
     const leftBtnUrl = '/img/leftBtn.png';
     const rightBtnUrl = '/img/rightBtn.png';
+    const recipes = [
+        {   
+            post_id: 1,
+            title: 'Title1',
+            username: 'User1'
+        },
+        {
+            post_id: 2,
+            title: 'Title2',
+            username: 'User2'
+        },
+        {
+            post_id: 3,
+            title: 'Title3',
+            username: 'User3'
+        },
+        {
+            post_id: 4,
+            title: 'Title4',
+            username: 'User4'
+        },
+        {
+            post_id: 5,
+            title: 'Title5',
+            username: 'User5'
+        },
+    ]
 
     return (
     <div className="flex flex-col items-center">
@@ -98,10 +125,11 @@ export const MainPage:React.FC = ()=>{
 
         {/* 레시피들 3열 */}
         <div className="mt-5 grid grid-cols-3 gap-3">
-            <RecipeCard />
-            <RecipeCard />
-            <RecipeCard />
-            <RecipeCard />
+            {recipes.map((each, index) => {
+                return (
+                    <RecipeCard key={index} {...each}/>
+                )
+            })}
         </div>
     </div>
     )
