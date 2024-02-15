@@ -5,6 +5,37 @@ type RecipDetailPageParams = {
     id: string
 }
 
+const recipe = [ //임시
+    {   
+        post_id: 1,
+        title: 'BEST RECIPE1',
+        short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
+        content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
+        furniture_category: [1],
+        material_category: [1,2,3],
+        username: 'User1'
+    }
+]
+
+const UsedCategory = (type: string) => {
+    return (
+        <div className={`mt-10 ${type==="가구 종류"? 'bg-[#DEF0CA]' : 'bg-[#F8FBF4]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
+            <h1 className="text-[30px] text-[#507E1F]">{type}</h1>
+            <div className="flex overflow-x-auto min-h-[40px]">
+                {type==="가구 종류"? recipe[0].furniture_category.map((each, index) => {
+                return (
+                    <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
+                )
+                }) : recipe[0].material_category.map((each, index) => {
+                    return (
+                        <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
+                    )
+                })} 
+            </div>
+        </div>
+    )
+}
+
 export const RecipeDetailPage:React.FC = () => {
     const leftBtnUrl = '/img/leftBtn.png';
     const rightBtnUrl = '/img/rightBtn.png';
@@ -58,13 +89,8 @@ export const RecipeDetailPage:React.FC = () => {
                     </div>
                     
                     <hr className="w-full bg-black mt-10 mb-2"/>
-                    <div className="flex text-[18px]">사용재료</div>
-                    <div className="flex flex-wrap mt-3 gap-2 min-h-[88px] max-h-[80px]">
-                        <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">플라스틱</div>
-                        <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">플라스틱</div>
-                        <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">플라스틱</div>
-                        <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">플라스틱</div>
-                    </div>
+                    {UsedCategory('가구 종류')}
+                    {UsedCategory('사용재료')}
                 </div>
             </div>
         </div>
