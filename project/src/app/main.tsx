@@ -77,8 +77,6 @@ const RecipeCard = ({ post_id, title, username }) => {
 }
 
 export const MainPage:React.FC = ()=>{
-    const leftBtnUrl = '/img/leftBtn.png';
-    const rightBtnUrl = '/img/rightBtn.png';
     const recipes = [
         {   
             post_id: 1,
@@ -156,7 +154,7 @@ export const MainPage:React.FC = ()=>{
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: false,
-      };
+    };
 
     return (
     <div className="flex flex-col items-center">
