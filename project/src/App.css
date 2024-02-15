@@ -1,7 +1,7 @@
 .MainCSS {
-  background-color: #F8FBF4;
-  min-height: 100vh;
+  background-color: #F8FBF4; 
   display: flex;  
+  min-height: 180vh;
   flex-direction: column;
   font-family: 'Montserrat';
   /*height: 100vh;*/

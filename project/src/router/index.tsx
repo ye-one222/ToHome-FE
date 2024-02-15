@@ -1,14 +1,14 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import React from "react";
 import { MainPage } from "../app/main.tsx"
-import { MyPage } from "../app/myPage.tsx"
-import { LoginPage } from '../app/login.tsx';
-import { SignupPage } from '../app/signup.tsx';
+import { MyPage } from "../app/person/myPage.tsx"
+import { LoginPage } from '../app/login/login.tsx';
+import { SignupPage } from '../app/login/signup.tsx';
 import { HouseMainPage } from '../app/houseMain.tsx';
 import { SearchMainPage } from '../app/searchMain.tsx';
 import { PostPage } from '../app/post.tsx';
 import { RecipeDetailPage } from '../app/detail/[id]/recipePage.tsx';
-import SimpleSlider from '../app/zz.tsx';
+import { GuestProfilePage } from '../app/person/guest.tsx';
 
 export type HomeRouterPath = '/' | '/download' 
 const homeRouter = createBrowserRouter([
@@ -45,8 +45,8 @@ const homeRouter = createBrowserRouter([
         element: <RecipeDetailPage />,
     },
     {
-        path:'/zz', //일단 임시로
-        element: <SimpleSlider />,
+        path:'/guest',
+        element: <GuestProfilePage />,
     },
 ])
 

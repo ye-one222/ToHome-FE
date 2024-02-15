@@ -87,7 +87,7 @@ export const PostPage:React.FC = () => {
     const [ Furniture, setFurniture ] = useState<string[]>([])
     const [ addFurnitureInput, setAddFurnitureInput ] = useState<string>('')
     
-    const bestSource = ['플라스틱','유리','정제된 나무']
+    const bestSource = ['플라스틱','유리','정제된 나무','플라스틱','유리','정제된 나무','플라스틱','유리','정제된 나무']
     const bestFurniture = ['의자','간이책상','서랍장']
 
     const [ IsHousePhoto, setIsHousePhoto ] = useState(false)
@@ -153,10 +153,12 @@ export const PostPage:React.FC = () => {
                             <button 
                             onClick={ () => 
                                 { (flag ? setSource:setFurniture)(
-                                    (flag ? Source:Furniture).filter( function(_, indexx) { return index !== indexx } )
+                                    (flag ? Source:Furniture).filter( function(_, indexx) 
+                                        { return index !== indexx } )
                                 ) } 
                             } 
-                            className=" text-red-200 hover:text-red-300">x</button>
+                            className=" text-red-200 hover:text-red-300">
+                                x</button>
                         </div>
                         } 
                     ) }
@@ -173,7 +175,8 @@ export const PostPage:React.FC = () => {
                     
                     <button 
                     onClick={() => { 
-                        if((flag ? Source:Furniture).indexOf((flag ? addSourceInput:addFurnitureInput)) === -1) //현재 배열에 없다면
+                        if((flag ? Source:Furniture)
+                            .indexOf((flag ? addSourceInput:addFurnitureInput)) === -1) //현재 배열에 없다면
                         {   
                             (flag ? setSource:setFurniture)([...(flag ? Source:Furniture), (flag ? addSourceInput:addFurnitureInput)]);   //배열에 추가
                         }
@@ -183,16 +186,23 @@ export const PostPage:React.FC = () => {
                         추가
                     </button>
                     
-                    <div className="flex flex-row gap-3 mt-5">
+                    <div className="flex flex-row gap-3 mt-5 overflow-x-auto">
                         <h1 className="text-[15px] text-[#507E1F]">Best!</h1>
                     {best.map((each) => {
                         return <button 
                         onClick={() => { 
-                            if((flag ? Source:Furniture).indexOf(each) === -1) {
-                                (flag ? setSource:setFurniture)([...(flag ? Source:Furniture), each])
+                            if( IsRecipe && !flag && Furniture.length === 1 ) //레시피 포스트, 가구종류, 이미 한개일때
+                            {  
+                                alert(" 레시피 게시글에서는 가구 종류를 하나만 선택해주세요! ")
+                            }
+                            else
+                            {
+                                if((flag ? Source:Furniture).indexOf(each) === -1) {
+                                    (flag ? setSource:setFurniture)([...(flag ? Source:Furniture), each])
+                                }
                             }
                         }} 
-                        className={`${flag ? 'bg-[#DEF0CA]':'bg-[#F8FBF4]'} text-[#507E1F] rounded-[30px] p-2 active:translate-y-1`}>
+                        className={`${flag ? 'bg-[#DEF0CA]':'bg-[#F8FBF4]'} text-[#507E1F] rounded-[30px] p-2 active:-translate-y-1 whitespace-nowrap`}>
                             {each}
                         </button>
                     })}
@@ -228,7 +238,7 @@ export const PostPage:React.FC = () => {
         
     }
 
-    return <div className="flex items-center justify-center">
+    return <div className="flex items-center justify-center ">
         <Menu />
 
         {!IsRecipe && !IsHouse &&
@@ -258,7 +268,9 @@ export const PostPage:React.FC = () => {
                 { Input3Component('레시피') }
             </div>
 
+            { UsedComponent('가구 종류', bestFurniture) }
             { UsedComponent('사용재료', bestSource) }
+
         </div>
         }
 

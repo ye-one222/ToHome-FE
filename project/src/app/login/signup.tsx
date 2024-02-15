@@ -34,7 +34,7 @@ export const SignupPage:React.FC = () => {
         <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
             <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/guest.png"/>
             <input 
-                onChange={handleMailInput}
+                onChange={ handleMailInput }
                 type="text" 
                 placeholder="E-Mail" 
                 className="LoginInput"/>
@@ -42,7 +42,7 @@ export const SignupPage:React.FC = () => {
         <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
             <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/guest.png"/>
             <input 
-                onChange={handleIDInput}
+                onChange={ handleIDInput }
                 type="text" 
                 placeholder="ID" 
                 className="LoginInput"/>
@@ -62,7 +62,7 @@ export const SignupPage:React.FC = () => {
         <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
             <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/lock.png"/>
             <input 
-                onChange={handlePwInput}
+                onChange={ handlePwInput }
                 type="text" 
                 placeholder="password" 
                 className="LoginInput"/>

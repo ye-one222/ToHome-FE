@@ -67,8 +67,8 @@ const HouseCard = ({ post_id, title, username }) => {
                 */}
             </div>
             <div className="flex justify-between items-end">
-                <h1 className="w-[132px] text-[22px] text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[18px] text-[#00000080] overflow-hidden">{username}</div>
+                <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
+                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{username}</div>
             </div>
         </div>
     )
