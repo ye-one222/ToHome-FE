@@ -1,6 +1,8 @@
 import React, { useState } from "react"
 import Slider from "react-slick";
 import { Menu } from "../interface/menu.tsx";
+import { recipes } from '../interface/recipes.tsx';
+import { topRecipes } from '../interface/topRecipes.tsx';
 import { Link } from "react-router-dom";
 
 const TopCard = ( {post_id, title, short_description, content, material_category, username} ) => {
@@ -60,7 +62,7 @@ const RecipeCard = ({ post_id, title, username }) => {
     //fetch로 GET 요청 -> 각각 저장
 
     return (
-        <Link to='/recipe/1'>
+        <Link to={`/recipe/${post_id}`}>
         <div className="flex flex-col">
             <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400">
                 {/* 사진 자리 - 나중에 이걸로 교체
@@ -77,76 +79,6 @@ const RecipeCard = ({ post_id, title, username }) => {
 }
 
 export const MainPage:React.FC = ()=>{
-    const recipes = [
-        {   
-            post_id: 1,
-            title: 'Title1',
-            username: 'User1'
-        },
-        {
-            post_id: 2,
-            title: 'Title2',
-            username: 'User2'
-        },
-        {
-            post_id: 3,
-            title: 'Title3',
-            username: 'User3'
-        },
-        {
-            post_id: 4,
-            title: 'Title4',
-            username: 'User4'
-        },
-        {
-            post_id: 5,
-            title: 'Title5',
-            username: 'User5'
-        },
-    ]
-    const topRecipes = [
-        {   
-            post_id: 1,
-            title: 'BEST RECIPE1',
-            short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
-            content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
-            material_category: [1,2,3],
-            username: 'User1'
-        },
-        {
-            post_id: 2,
-            title: 'BEST RECIPE2',
-            short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
-            content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
-            material_category: [1],
-            username: 'User2'
-        },
-        {
-            post_id: 3,
-            title: 'BEST RECIPE3',
-            short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
-            content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
-            material_category: [2,3],
-            username: 'User3'
-        },
-        {
-            post_id: 4,
-            title: 'BEST RECIPE4',
-            short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
-            content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
-            material_category: [3],
-            username: 'User4'
-        },
-        {
-            post_id: 5,
-            title: 'BEST RECIPE5',
-            short_description: '이건 요약 내용인데 흘러 넘치면 자동으로 줄바꿈...',
-            content: '이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
-            material_category: [1,3],
-            username: 'User5'
-        },
-    ]
-
     var settings = {
         dots: true,
         infinite: true,
@@ -154,6 +86,8 @@ export const MainPage:React.FC = ()=>{
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: false,
+        autoplay: true,
+        autoplaySpeed: 2500,
     };
 
     return (
@@ -175,7 +109,7 @@ export const MainPage:React.FC = ()=>{
         <div className="mt-10 grid grid-cols-3 gap-3">
             {recipes.map((each, index) => {
                 return (
-                    <RecipeCard key={index} {...each}/>
+                    <RecipeCard key={each.post_id} {...each}/>
                 )
             })}
         </div>

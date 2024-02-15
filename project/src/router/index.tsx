@@ -42,7 +42,7 @@ const homeRouter = createBrowserRouter([
         element: <PostPage />,
     },
     {
-        path:'/recipe/1', //일단 임시로
+        path:'/recipe/:id', //일단 임시로
         element: <RecipeDetailPage />,
     },
     {

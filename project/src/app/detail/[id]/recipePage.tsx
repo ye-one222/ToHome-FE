@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
+import { useParams } from "react-router-dom"
 
 type RecipDetailPageParams = {
     id: string
@@ -40,6 +41,7 @@ export const RecipeDetailPage:React.FC = () => {
     const leftBtnUrl = '/img/leftBtn.png';
     const rightBtnUrl = '/img/rightBtn.png';
     const [ IsScrapped, setIsScrapped ] = useState(false);
+    const { id } = useParams<RecipDetailPageParams>();
 
     return (
         <div className="flex flex-col items-center">
@@ -63,7 +65,7 @@ export const RecipeDetailPage:React.FC = () => {
                 <div className="mt-2 flex items-center justify-end gap-1">
                     <div className="flex-col">
                         <div className="text-right text-[13px] text-[#000000b2]">made by</div>
-                        <div className="text-right text-[17px] text-[#000000b2]">username</div>
+                        <div className="text-right text-[17px] text-[#000000b2]">{id}</div>
                     </div>
                     <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
                         {/* 사진 자리 - 나중에 이걸로 교체
