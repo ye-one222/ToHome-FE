@@ -42,11 +42,11 @@ const homeRouter = createBrowserRouter([
         element: <PostPage />,
     },
     {
-        path:'/recipe/:id', //일단 임시로
+        path:'/recipe/:id',
         element: <RecipeDetailPage />,
     },
     {
-        path:'/house/1', //일단 임시로
+        path:'/house/:id',
         element: <HouseDetailPage />,
     },
     {

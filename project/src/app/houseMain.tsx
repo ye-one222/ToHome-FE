@@ -63,7 +63,7 @@ const HouseCard = ({ post_id, title, username }) => {
     //fetch로 GET 요청 -> 각각 저장
 
     return (
-        <Link to='/house/1'>
+        <Link to={`/house/${post_id}`}>
         <div className="flex flex-col">
             <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400">
                 {/* 사진 자리 - 나중에 이걸로 교체
