@@ -1,7 +1,7 @@
 .MainCSS {
-  background-color: #F8FBF4;
-  min-height: 100vh;
+  background-color: #F8FBF4; 
   display: flex;  
+  min-height: 180vh;
   flex-direction: column;
   font-family: 'Montserrat';
   /*height: 100vh;*/
@@ -61,12 +61,4 @@
   color: rgb(161 161 170 / var(--tw-bg-opacity));
   padding: 3px;
   font-size: small;
-}
-
-.Try{
-  width: 150px;
-  height: 200px;
-  background-color: red;
-  position: absolute;
-  
 }

@@ -5,7 +5,7 @@ import { Link, NavLink } from "react-router-dom";
 export const Menu = (): JSX.Element => {
     const logoUrl = '/img/logo.png';
     const postImgUrl = '/img/pencil.png'
-    const [ IsLogin, setIsLogin ] = useState(false)
+    const [ IsLogin, setIsLogin ] = useState(true)
     //const [whatActiveBtn, setWhatActiveBtn] = useState('')
     const menus = [
         { name: "Main", path: "/" },
@@ -73,7 +73,8 @@ export const Menu = (): JSX.Element => {
                 <Link to='/post'><img src={postImgUrl} alt = "postImgUrl"/></Link>
                 :<img src={postImgUrl} onClick={() => { alert("로그인을 해주세요") }} alt = "postImgUrl"/>
             }
-            <Link to='/post'><button >비상용 버튼- post 페이지로 이동</button></Link>
+            <Link to='/post'><button className="absolute top-[600px] left-[10px]" >post 페이지로 이동 버튼</button></Link>
+            <Link to='/guest'><button className="absolute top-[650px] left-[10px]">남의 프로필로 이동 버튼</button></Link>
             
         </div>
     );
