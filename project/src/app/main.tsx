@@ -96,7 +96,7 @@ export const MainPage:React.FC = ()=>{
 
         {/* 상단 명예의 전당 */}
         <div className="flex mt-10 items-center gap-2">
-            <Slider {...settings} className="SliderCSS">
+            <Slider {...settings} className="MainSliderCSS">
                 {topRecipes.map((each, index) => {
                     return (
                         <TopCard key={index} {...each}/>

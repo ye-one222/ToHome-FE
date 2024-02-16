@@ -71,6 +71,10 @@
   
 }
 
-.SliderCSS {
-  width: 650px;
+.MainSliderCSS {
+  max-width: 650px;
+}
+
+.DetailSliderCSS {
+  max-width: 512px;
 }

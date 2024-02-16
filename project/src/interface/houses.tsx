@@ -6,7 +6,19 @@ export const houses = [
         content: '이건 하우스1 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1],
         material_category: [1,2,3],
-        username: 'User1'
+        username: 'User1',
+        comments: [
+            {
+                id: 1,
+                name: 'bowoon1216',
+                comment: '집이 너무 좋아 보여요~ 초대 부탁 ㅎㅎ'
+            },
+            {
+                id: 2,
+                name: 'yewon03',
+                comment: '대박이에요~'
+            }
+        ]
     },
     {
         post_id: 2,
@@ -15,7 +27,8 @@ export const houses = [
         content: '이건 하우스2 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [2,3],
         material_category: [1,2,3,5],
-        username: 'User2'
+        username: 'User2',
+        comments: []
     },
     {
         post_id: 3,
@@ -24,7 +37,8 @@ export const houses = [
         content: '이건 하우스3 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1,5],
         material_category: [1],
-        username: 'User3'
+        username: 'User3',
+        comments: []
     },
     {
         post_id: 4,
@@ -33,7 +47,8 @@ export const houses = [
         content: '이건 하우스4 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [4,7],
         material_category: [2,4],
-        username: 'User4'
+        username: 'User4',
+        comments: []
     },
     {
         post_id: 5,
@@ -42,6 +57,7 @@ export const houses = [
         content: '이건 하우스5 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1,2,3],
         material_category: [1,2,3],
-        username: 'User5'
+        username: 'User5',
+        comments: []
     },
 ]
