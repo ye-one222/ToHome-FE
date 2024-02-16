@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
 import { recipes } from '../../../interface/recipes.tsx';
 import { useParams } from "react-router-dom"
@@ -27,11 +27,46 @@ const UsedCategory = (type: string, index: number) => {
     )
 }
 
+const CommentComponent = ( { name, comment } ) => {
+    return (
+        <div className="flex gap-5 mb-8">
+            <div className="flex flex-col items-center w-[100px]">
+                <div className="w-[64px] h-[64px] bg-[#8181811a] rounded-[20px]">
+                    {/* 사진 자리 - 나중에 이걸로 교체
+                    <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
+                    */}
+                </div>
+                <p>{name}</p>
+            </div>
+            <div className="w-2/3 bg-[#A6CE79] text-white text-[16px] rounded-[30px] shadow-md p-5">
+                {comment}
+            </div>
+        </div>
+    )
+}
+
 export const RecipeDetailPage:React.FC = () => {
     const imgUrl = ['/img/logo.png', '/img/hand.png']
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const index = recipes.findIndex(recipe => recipe.post_id.toString() === id);
+    const [ isValidComment, setIsValidComment ] = useState(false);
+    const [ newComment, setNewComment ] = useState<string>('');
+
+    const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setNewComment(e.target.value);
+    }
+
+    useEffect(() => {
+        const invalidComment =
+            newComment === ''
+
+        setIsValidComment(!invalidComment)
+    }, [newComment])
+    
+    const postComment = () => {
+        //벡이랑 연결 후
+    }
 
     var settings = {
         dots: true,
@@ -45,6 +80,8 @@ export const RecipeDetailPage:React.FC = () => {
     return (
         <div className="flex flex-col items-center">
             <Menu/>
+
+            {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
                     <Slider {...settings} className="DetailSliderCSS">
@@ -88,6 +125,30 @@ export const RecipeDetailPage:React.FC = () => {
                     {UsedCategory('가구 종류', index)}
                     {UsedCategory('사용재료', index)}
                 </div>
+            </div>
+                        
+            {/* 댓글 */}
+            <div className="flex-col justify-center mt-4 w-[650px] min-h-[400px] bg-[#ffffffb2] rounded-[52px] p-10">
+                <p className="text-[30px] text-[#507E1F] ml-2 mb-5">댓글</p>
+                <div className="flex gap-3 justify-center mb-8">
+                    <textarea
+                        required
+                        placeholder="댓글을 작성해주세요." 
+                        className="p-2 rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent h-1/2 w-5/6 mb-2"
+                        onChange={handleCommentChange}
+                    />
+                    <button
+                        className={`flex items-center justify-center rounded-[4px] text-[16px] p-3 ${isValidComment? 'bg-[#E9F3DE] text-green-700 hover:bg-[#CFEAB2]': 'bg-gray-100 text-gray-400'}`}
+                        disabled={!isValidComment}
+                        onClick={postComment}
+                    >작성
+                    </button>
+                </div>
+                {recipes[index].comments.map((each, index) => {
+                    return (
+                        <CommentComponent name={each.name} comment={each.comment}/>
+                    )
+                })}
             </div>
         </div>
     )
