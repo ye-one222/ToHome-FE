@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
 import { recipes } from '../../../interface/recipes.tsx';
 import { useParams } from "react-router-dom"
+import Slider from "react-slick";
 
 type RecipDetailPageParams = {
     id: string
@@ -27,29 +28,32 @@ const UsedCategory = (type: string, index: number) => {
 }
 
 export const RecipeDetailPage:React.FC = () => {
-    const leftBtnUrl = '/img/leftBtn.png';
-    const rightBtnUrl = '/img/rightBtn.png';
+    const imgUrl = ['/img/logo.png', '/img/hand.png']
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const index = recipes.findIndex(recipe => recipe.post_id.toString() === id);
+
+    var settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+    };
 
     return (
         <div className="flex flex-col items-center">
             <Menu/>
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                    <button className="h-[42px]">
-                        <img src={leftBtnUrl} alt="leftBtn" />
-                    </button>
-                    <div className="w-[400px] h-[400px] bg-[#8181811a] rounded-[52px]">
-                        {/* 사진 자리 - 나중에 이걸로 교체
-                        <img src={imgURl} alt="Photo" className="w-[482px] h-[482px] rounded-[52px]" />
-                        */}
-                    </div>
-                    
-                    <button className="h-[42px]">
-                        <img src={rightBtnUrl} alt="rightBtn" />
-                    </button>
+                    <Slider {...settings} className="DetailSliderCSS">
+                        {imgUrl.map((url, index) => {
+                            return (
+                                <img key={index} src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+                            )
+                        })}
+                    </Slider>
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
