@@ -5,7 +5,7 @@ export const recipes = [
         short_description: '레시피1의 짧은 요약',
         content: '이건 레시피1 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1],
-        material_category: [1,2,3],
+        material_category: [1,2,6],
         username: 'User1'
     },
     {
@@ -41,7 +41,7 @@ export const recipes = [
         short_description: '레시피5의 짧은 요약',
         content: '이건 레시피5 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1],
-        material_category: [1,2,3],
+        material_category: [1,2,5],
         username: 'User5'
     },
     {
@@ -59,7 +59,7 @@ export const recipes = [
         short_description: '레시피7의 짧은 요약',
         content: '이건 레시피7 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 이건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ 건 내용인데 흘러 넘치면 자동으로 줄바꿈...ㅇㄹㄴㅁㅇㄹㅇㄴ  ㅋㅋㅋㅋㅋㅋ',
         furniture_category: [1],
-        material_category: [1,2,3],
+        material_category: [3,5,6],
         username: 'User7'
     },
 ]

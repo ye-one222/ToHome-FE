@@ -3,36 +3,6 @@ import { recipes } from '../interface/recipes.tsx';
 import { Menu } from "../interface/menu.tsx";
 import { Link } from "react-router-dom";
 
-const FilterCard = () => {
-    const tags = ['플라스틱', '스티로폼', '캔', '비닐', '종이', '유리']; //나중에 더 추가
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
-    return (
-        <div className="grid grid-cols-2 items-center w-[650px] h-[200px] bg-[#a0d4684c] rounded-[78px] p-8">
-            {tags.map((tag, index) => {
-                return(
-                    <div key={index} className="flex gap-1 text-[#507E1F]">
-                        <input
-                        type="checkbox"
-                        className="w-5 h-5 accent-gray-50"
-                        onChange={({target: {checked}})=> {
-                            if(checked){
-                                setSelectedTags((prevSelectedTags) => [...prevSelectedTags, tag]);
-                            }else{
-                                setSelectedTags((prevSelectedTags) =>
-                                    prevSelectedTags.filter(atag => atag !== tag)
-                                );
-                            }
-                        }}
-                        />
-                        {tag}
-                    </div>
-                )
-            })}
-        </div>
-    )
-}
-
 const RecipeCard = ({ post_id, title, username }) => {
     /*const [imgUrl, setImgUrl] = useState('');
     const [title, setTitle] = useState('');
@@ -58,8 +28,43 @@ const RecipeCard = ({ post_id, title, username }) => {
 }
 
 export const SearchMainPage:React.FC = ()=>{
-    const tags = ['플라스틱', '스티로폼', '캔', '비닐', '종이', '유리']; //나중에 더 추가
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [ selectedTags, setSelectedTags ] = useState<number[]>([]);
+    const [ isUpdated, setIsUpdated ] = useState(false);
+    const tags = [ //순서는 일단 임의로 정함
+        {
+            category: 1,
+            name: '플라스틱'
+        },
+        {
+            category: 2,
+            name: '비닐'
+        },
+        {
+            category: 3,
+            name: '종이'
+        },
+        {
+            category: 4,
+            name: '유리'
+        },
+        {
+            category: 5,
+            name: '스티로폼'
+        },
+        {
+            category: 6,
+            name: '캔'
+        },
+    ]
+
+    const isInclude = ( tagArr: number[], selectedTagArr: number[] ): boolean => {
+        for(const tag of tagArr){
+            if(selectedTagArr.includes(tag)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     return (
     <div className="flex flex-col items-center">
@@ -67,11 +72,9 @@ export const SearchMainPage:React.FC = ()=>{
 
         {/* 상단 필터 박스 */}
         <div className="flex flex-col mt-10 items-center gap-2">
-            
-            
             <div className="flex flex-col items-center w-[650px] bg-[#E9F3DE] rounded-[78px] px-8 py-4">
                 <p className="text-[#507E1F] text-[13px]">레시피에 사용될 재료를 선택하세요.</p>
-                <div className="mt-4 grid grid-cols-3 items-center gap-5">
+                <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-5">
                     {tags.map((tag, index) => {
                         return(
                             <div key={index} className="flex gap-1 text-[#507E1F]">
@@ -79,33 +82,35 @@ export const SearchMainPage:React.FC = ()=>{
                                 type="checkbox"
                                 className="w-5 h-5 accent-gray-50"
                                 onChange={({target: {checked}})=> {
-                                    if(checked){
-                                        setSelectedTags((prevSelectedTags) => [...prevSelectedTags, tag]);
-                                    }else{
+                                    if (checked) {
+                                        setSelectedTags((prevSelectedTags) => [...prevSelectedTags, tag.category]);
+                                    } else {
                                         setSelectedTags((prevSelectedTags) =>
-                                            prevSelectedTags.filter(atag => atag !== tag)
+                                            prevSelectedTags.filter(atag => atag !== tag.category)
                                         );
                                     }
+                                    setIsUpdated(true);
                                 }}
                                 />
-                                {tag}
+                                {tag.name}
                             </div>
                         )
                     })}
                 </div>
-                <button className="mt-7 bg-[#a0d4684c] rounded-[10px] text-[#507E1F] text-[16px] w-[139px] h-[50px] border border-[#DEF0CA] hover:border-[#507e1f] transition-all">검색</button>
             </div>
-
         </div>
 
         {/* 레시피들 3열 */}
-        <div className="mt-5 grid grid-cols-3 gap-3">
+        {isUpdated? <div className="mt-5 grid grid-cols-3 gap-3">
             {recipes.map((each, index) => {
-                return (
-                    <RecipeCard key={each.post_id} {...each}/>
-                )
+                if(isInclude(each.material_category, selectedTags)){
+                    return (
+                        <RecipeCard key={each.post_id} {...each}/>
+                    )
+                }
             })}
-        </div>
+        </div> 
+        : <div className="mt-10 text-[16px] text-[#507E1F]">버튼을 누르면 선택한 재료가 사용된 레시피가 나타납니다.</div>}
     </div>
     )
 }
