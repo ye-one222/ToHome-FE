@@ -31,6 +31,7 @@ export const SearchMainPage:React.FC = ()=>{
     const [ selectedTags, setSelectedTags ] = useState<number[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
     const [ searchInput, setSearchInput ] = useState<string>('');
+    const [ searchResult, setSearchResult ] = useState<string>('');
     const [ isSearchBtnClick, setSearchBtnClick ] = useState(false);
     const tags = [ //순서는 일단 임의로 정함
         {
@@ -75,7 +76,11 @@ export const SearchMainPage:React.FC = ()=>{
     const findTag = () => {
         setSearchBtnClick(true);
         const tag = tags.filter(tag => tag.name===searchInput);
-
+        if(tag.length === 0) {
+            setSearchResult('재료 목록에 존재하지 않습니다.');
+        }else {
+            setSearchResult(tag[0].name);
+        }
     }
 
     const handleReset = () => {
@@ -116,12 +121,12 @@ export const SearchMainPage:React.FC = ()=>{
                 <div className="flex flex-row mt-3 gap-2">
                     <input
                         placeholder="재료를 검색해 보세요."
-                        className="text-[15px]"
+                        className="SearchInputCSS px-2 py-1 rounded-[8px] text-[15px]"
                         value={searchInput}
                         onChange={handleSearchInput}
                     />
-                    <button onClick={findTag} className="bg-red-200 px-2 py-1 text-[15px]">검색</button>
-                    <button onClick={handleReset} className="bg-red-200 px-2 py-1 text-[15px]">초기화</button>
+                    <button onClick={findTag} className="text-lime-100 bg-lime-500 hover:bg-lime-600 px-3 py-1 text-[15px] rounded-[8px]">검색</button>
+                    <button onClick={handleReset} className="text-gray-700 bg-gray-300 hover:bg-gray-400 px-2 py-1 text-[15px] rounded-[8px]">초기화</button>
                 </div>
 
                 {!isSearchBtnClick? <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-3">
@@ -129,7 +134,7 @@ export const SearchMainPage:React.FC = ()=>{
                         return(
                             <div key={index} className="flex text-[#507E1F]">
                                 <button
-                                    className="w-[90px] max-w-[90px] bg-[#a0d4684c] p-2 rounded-[15px] text-[15px]"
+                                    className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
                                     onClick={() => {
                                         setSelectedTags((prevSelectedTags) => {
                                             if (prevSelectedTags.includes(tag.category)) {
@@ -146,11 +151,28 @@ export const SearchMainPage:React.FC = ()=>{
                             </div>
                         )
                     })}
-                </div> : <div className="mt-4 items-center justify-center">
+                </div> : <div className="mt-4 items-center justify-center text-[#507E1F]">
                     {/* 입력한 재료와 똑같은 게 존재하면 그 체크박스 띄워주고 없으면 없다고 표시, 처음에 몇개만 보여주고 ...누르면 전체 보기
                         검색했다가 돌아오면 체크가 해제되네,,,,, 배열 새로 만들어서 저장해야 할 듯*/}
-                        
-                    </div>}
+                    {searchResult === '재료 목록에 존재하지 않습니다.'? searchResult :
+                    <button
+                        className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
+                        onClick={() => {
+                            const matchingTag = tags.find(tag => tag.name === searchResult);
+                            const tagCategory = matchingTag?.category;
+                            setSelectedTags((prevSelectedTags) => {
+                                if (prevSelectedTags.includes(tagCategory!)) {
+                                    return prevSelectedTags;
+                                } else {
+                                    return [...prevSelectedTags, tagCategory!];
+                                }
+                            });
+                            setIsUpdated(true);
+                        }}
+                    >
+                        {searchResult}
+                    </button>}
+                </div>}
             </div>
         </div>
 
