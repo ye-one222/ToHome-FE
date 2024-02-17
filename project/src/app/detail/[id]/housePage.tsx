@@ -114,6 +114,7 @@ export const HouseDetailPage:React.FC = () => {
                                     <div 
                                         className="flex bg-[#ECF6E1] border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3"
                                         onMouseEnter={() => { setGoodsClick(true) }}
+                                        onMouseLeave={() => { setGoodsClick(false) }}
                                         >
                                         {/* 이미지도 넣을까? */}
                                         {recipeTitle}
