@@ -1,7 +1,31 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 export const SignupPage:React.FC = () => {
     //fetch()
+    useEffect(() => {
+        fetch("http://tobehome.kro.kr:8080/signup", {
+            method: 'post',
+            body: JSON.stringify({
+                "email":"eee",
+                "nickname":"nnn",
+                "password":"ppp"
+            })
+        })
+        .then(res => {
+            if (res.status === 201) {
+                alert("성공");
+                return res.json();
+            } else if (res.status === 409) {
+                alert("연결은 됨")
+                //console.log(res)
+                return res.json();
+            }else{
+                alert(res.status)
+            }
+          })
+        .then(data => console.log(data))
+    },[]);
+
     const [password,setPassword] = useState<string|null>(null)
     
     const handleMailInput = () => {
@@ -45,13 +69,6 @@ export const SignupPage:React.FC = () => {
                 onChange={ handleIDInput }
                 type="text" 
                 placeholder="ID" 
-                className="LoginInput"/>
-        </div>
-        <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-2">
-            <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/guest.png"/>
-            <input 
-                type="text" 
-                placeholder="NAME" 
                 className="LoginInput"/>
         </div>
         <div className="h-[16px] ml-auto text-xs font-extralight">

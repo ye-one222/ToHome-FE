@@ -1,8 +1,28 @@
-import React from "react"
+import React, { useEffect } from "react"
 //import { Link } from "react-router-dom";
 
 
 export const LoginPage:React.FC = () => {
+    useEffect(() => {
+            fetch("http://tobehome.kro.kr:8080/login", {
+                method: 'post',
+                body: JSON.stringify({
+                    "nickname":"nnn",
+                    "password":"ppp"
+                })
+            })
+            .then(res => {
+                if (res.status === 200) {
+                    alert("저장 완료");
+                } else if (res.status === 400) {
+                    alert("res")
+                    //console.log(res)
+                    return res.json();
+                }
+              })
+            .then(data => console.log(data))
+    },[]);
+
     const handleID = () => {
         //아이디 입력
 
@@ -12,6 +32,8 @@ export const LoginPage:React.FC = () => {
     }
     const handleLoginBtn = () => {
         //로그인 버튼 눌렀을때
+        
+    
     }
 
     return <div className="LoginPageBg flex justify-center">
@@ -43,7 +65,7 @@ export const LoginPage:React.FC = () => {
                 
             </div>
             <button onClick = {handleLoginBtn} className="bg-white h-[50px] w-full z-30 rounded-md border hover:border-[#507e1f] transition-all">LOG IN</button>
-            <button className="flex z-30 ml-auto hover:font-semibold transition-all">Forget password?</button>
+            
         </div>
         
     </div>
