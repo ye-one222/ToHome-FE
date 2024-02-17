@@ -30,6 +30,8 @@ const RecipeCard = ({ post_id, title, username }) => {
 export const SearchMainPage:React.FC = ()=>{
     const [ selectedTags, setSelectedTags ] = useState<number[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
+    const [ searchInput, setSearchInput ] = useState<string>('');
+    const [ isSearchBtnClick, setSearchBtnClick ] = useState(false);
     const tags = [ //순서는 일단 임의로 정함
         {
             category: 1,
@@ -66,6 +68,21 @@ export const SearchMainPage:React.FC = ()=>{
         return false;
     }
 
+    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value);
+    }
+
+    const findTag = () => {
+        setSearchBtnClick(true);
+        const tag = tags.filter(tag => tag.name===searchInput);
+
+    }
+
+    const handleReset = () => {
+        setSearchBtnClick(false);
+        setSearchInput('');
+    }
+
     return (
     <div className="flex flex-col items-center">
         <Menu/>
@@ -74,7 +91,19 @@ export const SearchMainPage:React.FC = ()=>{
         <div className="flex flex-col mt-10 items-center gap-2">
             <div className="flex flex-col items-center w-[650px] bg-[#E9F3DE] rounded-[78px] px-8 py-4">
                 <p className="text-[#507E1F] text-[13px]">레시피에 사용될 재료를 선택하세요.</p>
-                <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-5">
+
+                <div className="flex flex-row gap-2">
+                    <input
+                        placeholder="재료를 검색해 보세요."
+                        className="text-[15px]"
+                        value={searchInput}
+                        onChange={handleSearchInput}
+                    />
+                    <button onClick={findTag} className="bg-red-200 px-2 py-1 text-[15px]">검색</button>
+                    <button onClick={handleReset} className="bg-red-200 px-2 py-1 text-[15px]">초기화</button>
+                </div>
+
+                {!isSearchBtnClick? <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-5">
                     {tags.map((tag, index) => {
                         return(
                             <div key={index} className="flex gap-1 text-[#507E1F]">
@@ -96,7 +125,11 @@ export const SearchMainPage:React.FC = ()=>{
                             </div>
                         )
                     })}
-                </div>
+                </div> : <div className="mt-4 items-center justify-center">
+                    dfsf
+                    {/* 입력한 재료와 똑같은 게 존재하면 그 체크박스 띄워주고 없으면 없다고 표시, 처음에 몇개만 보여주고 ...누르면 전체 보기
+                        검색했다가 돌아오면 체크가 해제되네,,,,, 배열 새로 만들어서 저장해야 할 듯*/}
+                    </div>}
             </div>
         </div>
 
