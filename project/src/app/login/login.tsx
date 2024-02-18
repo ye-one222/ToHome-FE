@@ -93,7 +93,7 @@ export const LoginPage:React.FC = () => {
                 <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/lock.png"/>
                 <input 
                     onChange={handlePW}
-                    type="text" 
+                    type="password" 
                     placeholder="password" 
                     className="LoginInput font-semibold w-full"/>
                 
