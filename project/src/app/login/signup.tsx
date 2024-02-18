@@ -1,38 +1,22 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
+import { Route, Routes } from "react-router-dom"
+import { LoginPage } from "./login.tsx"
+import { Link } from "react-router-dom"
 
 export const SignupPage:React.FC = () => {
-    //fetch()
-    useEffect(() => {
-        fetch("http://tobehome.kro.kr:8080/signup", {
-            method: 'post',
-            body: JSON.stringify({
-                "email":"eee",
-                "nickname":"nnn",
-                "password":"ppp"
-            })
-        })
-        .then(res => {
-            if (res.status === 201) {
-                alert("성공");
-                return res.json();
-            } else if (res.status === 409) {
-                alert("연결은 됨")
-                //console.log(res)
-                return res.json();
-            }else{
-                alert(res.status)
-            }
-          })
-        .then(data => console.log(data))
-    },[]);
+    const [ signFin, setSignFin ] = useState(false)
 
-    const [password,setPassword] = useState<string|null>(null)
+    const [ email, setEmail ] = useState<string|null>(null)
+    const [ id, setId ] = useState<string|null>(null)
+    const [ password,setPassword ] = useState<string|null>(null)
     
-    const handleMailInput = () => {
+    const handleMailInput = (e) => {
         //이메일 중복 조건 -> 하려면 중복확인버튼도 넣어야함
+        setEmail(e.target.value);
     }
-    const handleIDInput = () => {
+    const handleIDInput = (e) => {
         //아이디 중복 조건 -> 하려면 중복확인버튼
+        setId(e.target.value);
     }
     const handlePwInput = (event: React.ChangeEvent<HTMLInputElement>) =>{
         //비밀번호 조건
@@ -41,6 +25,35 @@ export const SignupPage:React.FC = () => {
             setPassword(nowValue)
         }else{
             setPassword(null)
+        }
+    }
+
+    const handleLogin = () => {
+        if(password === null){
+            alert("비밀번호 자리 수를 지켜주세요!")
+        }else{
+            fetch('http://tobehome.kro.kr:8080/signup', {
+                method: 'post',
+                headers: {
+                    "Content-Type":"application/json; charset=utf-8"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    nickname: id,
+                    password: password
+                })
+            })
+            .then((response) => response.json())
+            .then((data) => { 
+            if(data.id){
+                alert("회원가입 완료! 로그인 해주세요~");
+                setSignFin(true);
+            }
+            else{
+                alert(data.message);
+                
+            }
+            });
         }
     }
 
@@ -73,7 +86,7 @@ export const SignupPage:React.FC = () => {
         </div>
         <div className="h-[16px] ml-auto text-xs font-extralight">
             {password ? 'Vaild Form!':
-                <h1>비밀번호 자리수: 8~15 자리</h1>
+                '비밀번호 자리수: 8~15 자리'
             }
         </div>
         <div className="bg-white h-[50px] w-full flex flex-row items-center gap-4 rounded-md mb-4">
@@ -85,7 +98,12 @@ export const SignupPage:React.FC = () => {
                 className="LoginInput"/>
         </div>
         
-        <button className="bg-white h-[50px] w-full z-30 rounded-md mb-4 border hover:border-[#507e1f] transition-all">SIGN UP</button>
+        <button 
+        onClick={ handleLogin }
+        className={`bg-white h-[50px] w-full z-30 rounded-md mb-4 border transition-all ${password ? 'hover:border-[#507e1f]':'hover:border-zinc-400'}`}>
+            SIGN UP
+        </button>
+        {signFin && <Link to='/login' className="z-30"><button className="z-30 hover:font-semibold transition-all">로그인하러 가기</button></Link>}
     </div>
     
 </div>

@@ -7,7 +7,7 @@ interface goodsBtnType {
     y: number;
     postId:string;
 }
-  /*
+  
 const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId}) => {
     const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
 
@@ -19,12 +19,16 @@ const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId}) => {
         { goodsBtnClick && 
         <div 
         style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
-        className="bg-white rounded-[30px] w-[200px] h-[300px]">
-            <button className="">취소</button>
+        className="flex flex-col gap-3 bg-white rounded-[30px] p-3">
+            <button 
+            onClick={() => { setGoodsBtnClick(false) }} 
+            className="ml-auto hover:text-red-500">
+                close</button>
+            <h1>{postId}</h1>
         </div>}
     </div>
 }
-*/
+
 export const PostPage:React.FC = () => {
     const myRecipes = [
         {
@@ -94,6 +98,8 @@ export const PostPage:React.FC = () => {
     //const [ EditingGoods, setEditingGoods ] = useState(false)
     const [ goodsBtn, setGoodsBtn ] = useState<goodsBtnType[]>([])
     const [ addGoodsClick, setAddGoodsClick ] = useState(false)
+    const [ xy, setXY ] = useState({x:0, y:0})
+    const [ goodsPostId, setGoodsPostId ] = useState<string|null>(null)
     //goodsBtn 배열은 각 버튼의 위치와 게시글 아이디를 가지고 있음
 
     const LocatePhotos = (photosrc) => {
@@ -210,28 +216,42 @@ export const PostPage:React.FC = () => {
                 </div>
             </div>
     }
-/*
+
     const handlePhotoClick = (event: React.MouseEvent<HTMLImageElement>) => {
         //클릭 했을 때 마우스 좌표(위치) 파악 
         //-> 거기에 +버튼 추가 (+버튼에 기능 따로 넣어놓고)
-        if(EditingGoods)
+        if( goodsPostId )
         {
             const boundingRect = event.currentTarget.getBoundingClientRect();
             console.log(event.clientX, event.clientY)
-            const newBtn:goodsBtnType = { x:event.clientX - boundingRect.left, y:event.clientY - boundingRect.top, postId:'0' }
+            const newBtn:goodsBtnType = { x:event.clientX - boundingRect.left, y:event.clientY - boundingRect.top, postId:goodsPostId }
             setGoodsBtn([...goodsBtn, newBtn])
+            setGoodsPostId(null)
         }
     }
+   
 
-*/
     const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId }) => {
-        return <div className="flex w-full">
-            <button className="bg-red-200 text-white rounded-[30px] w-[45px]">-</button>
-            <h1 className="bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-3">{postId}</h1>
+         
+        const handleDeleteGoods = () => {
+            //postId,x,y가 같은 goodsBtn 배열의 원소를 제거 해야함 
+            goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y)
+            //하나라도 다른 것들만 나
+        }
+
+        return <div className="flex items-center justify-center w-full gap-3">
+            <button onClick={ handleDeleteGoods } className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-300 ">
+                -</button>
+            <div className="flex gap-5 pl-5 bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-2">
+                <img src="/img/logo.png" alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
+                <h1 className="flex items-center justify-center text-[#507E1F] text-[20px]">{postId}</h1>
+            </div>
         </div>
     }
 
     const handleGoodsClick = () => {
+        //클릭한 이벤트(게시글)의 postid 받아와야함 
+        setGoodsPostId(`받아온postID ${goodsBtn?.length}`);
         setAddGoodsClick(false)
         //setGoodsBtn({})
         //마우스 따라다니고 사진 클릭하면 그위에 플러스 버튼 생김
@@ -278,15 +298,15 @@ export const PostPage:React.FC = () => {
         <div className="absolute top-[93px] w-[50%] lg:w-[40%] bg-white rounded-[50px] p-10">
             <div className="w-full flex items-center justify-center">
                 { IsHousePhoto ?
-                <div >
-                    {/* EditingGoods && 
+                <div onMouseMove={(e) => { setXY({x:e.clientX - 550, y:e.clientY -100}) }}>
+                    { goodsPostId && 
                         <h1 className="absolute top-4 left-40 justify-center text-[15px]">
                             사진위에 원하는 위치에 클릭해서 소품을 추가해주세요!
-                        </h1>*/
+                        </h1>
                     }
                     <img 
                     src={`/img/select/${photosSrc[0]}`} 
-                    //onClick={ handlePhotoClick }
+                    onClick={ handlePhotoClick }
                     alt="photos" 
                     className="max-w-full max-h-30% rounded-[50px] mb-5"/>
                     <div className="flex flex-col items-center gap-4">
@@ -294,12 +314,12 @@ export const PostPage:React.FC = () => {
                         <div className="flex items-center justify-center gap-3 w-full">
                             <button 
                             onFocus={() => { setAddGoodsClick(true) }} 
-                            className="bg-[#85A563] rounded-[30px] text-white text-[30px] w-[45px] h-[45px]">
+                            className="bg-[#85A563] rounded-[30px] text-white text-[30px] w-[60px] h-[60px]">
                                 +
                             </button>
                             <button 
                             onFocus={() => { setAddGoodsClick(true) }} 
-                            className="bg-[#ECF6E1] border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] w-full h-[45px]">
+                            className="bg-[#ECF6E1] border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] w-full h-[60px]">
                                 사용한 레시피를 추가하세요!
                             </button>
                         </div>
@@ -312,13 +332,10 @@ export const PostPage:React.FC = () => {
                                 </div>})
                             }
                         </div>} 
+                        { goodsPostId && <div style={{ position:"absolute", left:xy.x, top:xy.y }}>까만점</div>}
                     </div>
-                    { /*goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId} />)*/}
-                    {/*<button 
-                    onClick={() => { setEditingGoods(!EditingGoods) }} 
-                    className="flex bg-zinc-200 rounded-[30px] ml-auto mr-3 mt-2">
-                        {EditingGoods ? '편집 완료':'소품 추가'}
-                </button>*/}
+                    { goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId} />)}
+                    
                 </div>:
                 
                 <div>

@@ -1,14 +1,20 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 //import { Link } from "react-router-dom";
 
 
 export const LoginPage:React.FC = () => {
-    useEffect(() => {
+
+    const [ userId,setUserId ] = useState<string|null>(null)
+    const [ password,setPassword ] = useState<string|null>(null)
+    const [ loginFin, setLoginFin ] = useState<boolean>(false)
+    
+   /* useEffect(() => {
             fetch("http://tobehome.kro.kr:8080/login", {
                 method: 'post',
                 body: JSON.stringify({
-                    "nickname":"nnn",
-                    "password":"ppp"
+                    nickname:"nnn",
+                    password:"ppp"
                 })
             })
             .then(res => {
@@ -18,21 +24,49 @@ export const LoginPage:React.FC = () => {
                     alert("res")
                     //console.log(res)
                     return res.json();
+                }else{
+                    console.log(res.status)
                 }
               })
-            .then(data => console.log(data))
-    },[]);
+            .then(data => console.log("this is data:",data))
+    },[]);*/
 
-    const handleID = () => {
+    const handleID = (e) => {
         //아이디 입력
-
+        setUserId(e.target.value)
     }
-    const handlePW = () => {
+    const handlePW = (e) => {
         //비밀번호 입력
+        setPassword(e.target.value)
     }
     const handleLoginBtn = () => {
         //로그인 버튼 눌렀을때
-        
+        if(userId && password){
+            fetch('http://tobehome.kro.kr:8080/login', {
+                method: 'post',
+                headers: {
+                    "Content-Type":"application/json; charset=utf-8"
+                },
+                body: JSON.stringify({
+                    nickname: userId,
+                    password: password
+                })
+            })
+            .then((response) => response.json())
+            .then((data) => { 
+            if(data.id){
+                //login success Let's get token
+                console.log(data.token)
+                //토큰 받아서 로컬 스트리지 or 세션 스토리지에 저장 + 로그아웃할때 취소
+                localStorage.setItem("login-token",data.token)
+                localStorage.setItem("user-nickname", userId)
+                setLoginFin(true)
+            }
+            else{
+                alert(data.message);
+            }
+            });
+        }
     
     }
 
@@ -65,7 +99,8 @@ export const LoginPage:React.FC = () => {
                 
             </div>
             <button onClick = {handleLoginBtn} className="bg-white h-[50px] w-full z-30 rounded-md border hover:border-[#507e1f] transition-all">LOG IN</button>
-            
+            { loginFin && 
+                <Link to='/' className="z-30"><button className="z-30 hover:font-semibold">로그인 완료! 메인화면으로 돌아가기</button></Link>}
         </div>
         
     </div>
