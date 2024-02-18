@@ -3,26 +3,22 @@ import { Menu } from "../../../interface/menu.tsx"
 import { houses } from '../../../interface/houses.tsx';
 import { recipes } from '../../../interface/recipes.tsx';
 import { Link, useParams } from "react-router-dom"
-import Slider from "react-slick";
+import { PostData } from "../../../interface/PostData.tsx";
+import { CommentData } from "../../../interface/CommentData.tsx";
 
 type HouseDetailPageParams = {
     id: string
 }
 
-const UsedCategory = (type: string, index: number) => {
+const UsedCategory = (type: string, category: number|undefined) => {
     return (
         <div className={`mt-10 ${type==="가구 종류"? 'bg-[#DEF0CA]' : 'bg-[#F8FBF4]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
             <h1 className="text-[30px] text-[#507E1F]">{type}</h1>
             <div className="flex overflow-x-auto min-h-[40px]">
-                {type==="가구 종류"? houses[index].furniture_category.map((each, index) => {
-                return (
-                    <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
-                )
-                }) : houses[index].material_category.map((each, index) => {
-                    return (
-                        <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
-                    )
-                })} 
+                {type==="가구 종류"? 
+                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                }
             </div>
         </div>
     )
@@ -56,6 +52,8 @@ export const HouseDetailPage:React.FC = () => {
     const [ isGoodsClick, setGoodsClick ] = useState(false);
     const [ goodsIndex, setGoodsIndex ] = useState<number>();
     const [ recipeTitle, setRecipeTitle ] = useState<string>('');
+    const [ thisHouse, setThisHouse ] = useState<PostData>();
+    const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     //url도 있어야함
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -70,8 +68,44 @@ export const HouseDetailPage:React.FC = () => {
     }, [newComment])
     
     const postComment = () => {
-        //벡이랑 연결 후
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
+            method: 'post',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8; int",
+                "user_id":localStorage.getItem("user-id")!,
+            },
+            body: JSON.stringify({
+                content: newComment
+            })
+        })
     }
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisHouse(data);
+        })
+
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisComments(data);
+        })
+    }, []);
 
     const findRecipe = ( id: number ) => {
         const recipe = recipes.filter(recipe => recipe.post_id===id);
@@ -155,8 +189,8 @@ export const HouseDetailPage:React.FC = () => {
                     </div>
                     
                     <hr className="w-full bg-black mt-10 mb-2"/>
-                    {UsedCategory('가구 종류',index)}
-                    {UsedCategory('사용재료',index)}
+                    {UsedCategory('가구 종류',thisHouse?.furnitureCategory)}
+                    {UsedCategory('사용재료',thisHouse?.materialCategory)}
                 </div>
             </div>
 
@@ -177,9 +211,9 @@ export const HouseDetailPage:React.FC = () => {
                     >작성
                     </button>
                 </div>
-                {houses[index].comments.map((each, index) => {
+                {thisComments.map((each, index) => {
                     return (
-                        <CommentComponent key={index} name={each.name} comment={each.comment}/>
+                        <CommentComponent key={each.id} name={each.userId} comment={each.content}/>
                     )
                 })}
             </div>

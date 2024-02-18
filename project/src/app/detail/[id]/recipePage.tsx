@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
-import { recipes } from '../../../interface/recipes.tsx';
 import { useParams } from "react-router-dom"
 import Slider from "react-slick";
-import { RecipeData } from "../../../interface/RecipeData.tsx";
+import { PostData } from "../../../interface/PostData.tsx";
 import { CommentData } from "../../../interface/CommentData.tsx";
 
 type RecipDetailPageParams = {
@@ -48,7 +47,7 @@ export const RecipeDetailPage:React.FC = () => {
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
-    const [ thisRecipe, setThisRecipe ] = useState<RecipeData>();
+    const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -87,7 +86,6 @@ export const RecipeDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisRecipe(data);
-            console.log(data);
         })
 
         fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
@@ -100,7 +98,6 @@ export const RecipeDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisComments(data);
-            console.log(data);
         })
     }, []);
 

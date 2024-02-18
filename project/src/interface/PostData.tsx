@@ -1,4 +1,4 @@
-export interface RecipeData {
+export interface PostData {
     id: number,
     userId: number,
     title: string,
