@@ -54,10 +54,11 @@ export const HouseDetailPage:React.FC = () => {
     const [ recipeTitle, setRecipeTitle ] = useState<string>('');
     const [ thisHouse, setThisHouse ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
-    //url도 있어야함
+    const [ isUpdated, setIsUpdated ] = useState(false);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
+        setIsUpdated(false);
     }
 
     useEffect(() => {
@@ -79,6 +80,8 @@ export const HouseDetailPage:React.FC = () => {
                 content: newComment
             })
         })
+        setIsUpdated(true);
+        setNewComment('');
     }
 
     useEffect(() => {
@@ -104,8 +107,9 @@ export const HouseDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisComments(data);
+            setIsUpdated(false);
         })
-    }, []);
+    }, [isUpdated]);
 
     const findRecipe = ( id: number ) => {
         const recipe = recipes.filter(recipe => recipe.post_id===id);
@@ -127,7 +131,9 @@ export const HouseDetailPage:React.FC = () => {
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10 relative">
                     <img src={imgUrl} alt="Photo" className="w-[512px] h-[512px] max-w-[512px] max-h-[512px] rounded-[52px]" />
-                    {houses[index].relatedRecipes.map((each, index) => {
+                    
+                    {/* api 수정 후 손보기 */}
+                    {/*houses[index].relatedRecipes.map((each, index) => {
                         return (
                             <div className="absolute" style={{top: `${each.location.y}px`, left: `${each.location.x}px`}}>
                                 <button
@@ -151,19 +157,19 @@ export const HouseDetailPage:React.FC = () => {
                                         onMouseEnter={() => { setGoodsClick(true) }}
                                         onMouseLeave={() => { setGoodsClick(false) }}
                                         >
-                                        {/* 이미지도 넣을까? */}
+                                        { 이미지도 넣을까? }
                                         {recipeTitle}
                                     </div>
                                 </Link>}
                             </div>
                         )
-                    })}
+                    })*/}
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
                     <div className="flex-col">
                         <div className="text-right text-[13px] text-[#000000b2]">made by</div>
-                        <div className="text-right text-[17px] text-[#000000b2]">{houses[index].username}</div>
+                        <div className="text-right text-[17px] text-[#000000b2]">{thisHouse?.userId}</div>
                     </div>
                     <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
                         {/* 사진 자리 - 나중에 이걸로 교체
@@ -181,11 +187,11 @@ export const HouseDetailPage:React.FC = () => {
                 </div>
 
                 <div className="flex flex-col p-5">
-                    <h1 className="min-h-[45px] text-[40px] font-bold text-[#6C9441] overflow-y-hidden">{houses[index].title}</h1>
+                    <h1 className="min-h-[45px] text-[40px] font-bold text-[#6C9441] overflow-y-hidden">{thisHouse?.title}</h1>
                     <hr className="w-full bg-black mt-2 mb-2"/>
-                    <div className="min-h-[60px] text-[20px] whitespace-pre-wrap overflow-y-hidden">{houses[index].short_description}</div>
+                    <div className="min-h-[60px] text-[20px] whitespace-pre-wrap overflow-y-hidden">{thisHouse?.shortDescription}</div>
                     <div className="flex bg-[#F8FBF4] rounded-[52px] p-8">
-                        <div className="min-h-[70px] text-[15px] whitespace-pre-wrap overflow-y-hidden">{houses[index].content}</div>
+                        <div className="min-h-[70px] text-[15px] whitespace-pre-wrap overflow-y-hidden">{thisHouse?.content}</div>
                     </div>
                     
                     <hr className="w-full bg-black mt-10 mb-2"/>
@@ -203,6 +209,7 @@ export const HouseDetailPage:React.FC = () => {
                         placeholder="댓글을 작성해주세요." 
                         className="p-2 rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent h-1/2 w-5/6 mb-2"
                         onChange={handleCommentChange}
+                        value={newComment}
                     />
                     <button
                         className={`flex items-center justify-center rounded-[4px] text-[16px] p-3 ${isValidComment? 'bg-[#E9F3DE] text-green-700 hover:bg-[#CFEAB2]' : 'bg-gray-100 text-gray-400'}`}

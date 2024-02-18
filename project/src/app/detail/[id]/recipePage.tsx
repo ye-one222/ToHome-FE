@@ -49,6 +49,7 @@ export const RecipeDetailPage:React.FC = () => {
     const [ newComment, setNewComment ] = useState<string>('');
     const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
+    const [ isUpdated, setIsUpdated ] = useState(false);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -73,6 +74,11 @@ export const RecipeDetailPage:React.FC = () => {
                 content: newComment
             })
         })
+        .then(() => {
+            // fetch 요청이 완료되었을 때 실행될 코드
+            setIsUpdated(true);
+            setNewComment('');
+        })
     }
 
     useEffect(() => {
@@ -87,7 +93,9 @@ export const RecipeDetailPage:React.FC = () => {
         .then(data => {
             setThisRecipe(data);
         })
+    }, []);
 
+    useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
             method: 'get',
             headers: {
@@ -98,8 +106,9 @@ export const RecipeDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisComments(data);
+            setIsUpdated(false);
         })
-    }, []);
+    }, [isUpdated]);
 
     var settings = {
         dots: true,
@@ -169,6 +178,7 @@ export const RecipeDetailPage:React.FC = () => {
                         placeholder="댓글을 작성해주세요." 
                         className="p-2 rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-transparent h-1/2 w-5/6 mb-2"
                         onChange={handleCommentChange}
+                        value={newComment}
                     />
                     <button
                         className={`flex items-center justify-center rounded-[4px] text-[16px] p-3 ${isValidComment? 'bg-[#E9F3DE] text-green-700 hover:bg-[#CFEAB2]': 'bg-gray-100 text-gray-400'}`}
