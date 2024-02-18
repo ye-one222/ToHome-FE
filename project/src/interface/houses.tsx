@@ -18,6 +18,12 @@ export const houses = [
                 name: 'yewon03',
                 comment: '대박이에요~'
             }
+        ],
+        relatedRecipes: [
+            {
+                post_id: 2,
+                location: {x: 0, y: 200}
+            }
         ]
     },
     {
@@ -28,7 +34,17 @@ export const houses = [
         furniture_category: [2,3],
         material_category: [1,2,3,5],
         username: 'User2',
-        comments: []
+        comments: [],
+        relatedRecipes: [
+            {
+                post_id: 1,
+                location: {x: 100, y: 20}
+            },
+            {
+                post_id: 5,
+                location: {x: 400, y: 50}
+            }
+        ]
     },
     {
         post_id: 3,
@@ -38,7 +54,13 @@ export const houses = [
         furniture_category: [1,5],
         material_category: [1],
         username: 'User3',
-        comments: []
+        comments: [],
+        relatedRecipes: [
+            {
+                post_id: 3,
+                location: {x: 123, y: 321}
+            }
+        ]
     },
     {
         post_id: 4,
@@ -48,7 +70,13 @@ export const houses = [
         furniture_category: [4,7],
         material_category: [2,4],
         username: 'User4',
-        comments: []
+        comments: [],
+        relatedRecipes: [
+            {
+                post_id: 4,
+                location: {x: 77, y: 421}
+            }
+        ]
     },
     {
         post_id: 5,
@@ -58,6 +86,12 @@ export const houses = [
         furniture_category: [1,2,3],
         material_category: [1,2,3],
         username: 'User5',
-        comments: []
+        comments: [],
+        relatedRecipes: [
+            {
+                post_id: 7,
+                location: {x: 423, y: 126}
+            }
+        ]
     },
 ]

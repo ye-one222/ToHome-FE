@@ -30,6 +30,9 @@ const RecipeCard = ({ post_id, title, username }) => {
 export const SearchMainPage:React.FC = ()=>{
     const [ selectedTags, setSelectedTags ] = useState<number[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
+    const [ searchInput, setSearchInput ] = useState<string>('');
+    const [ searchResult, setSearchResult ] = useState<string>('');
+    const [ isSearchBtnClick, setSearchBtnClick ] = useState(false);
     const tags = [ //순서는 일단 임의로 정함
         {
             category: 1,
@@ -66,37 +69,110 @@ export const SearchMainPage:React.FC = ()=>{
         return false;
     }
 
+    const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value);
+    }
+
+    const findTag = () => {
+        setSearchBtnClick(true);
+        const tag = tags.filter(tag => tag.name===searchInput);
+        if(tag.length === 0) {
+            setSearchResult('재료 목록에 존재하지 않습니다.');
+        }else {
+            setSearchResult(tag[0].name);
+        }
+    }
+
+    const handleReset = () => {
+        setSearchBtnClick(false);
+        setSearchInput('');
+    }
+
     return (
     <div className="flex flex-col items-center">
         <Menu/>
 
         {/* 상단 필터 박스 */}
         <div className="flex flex-col mt-10 items-center gap-2">
-            <div className="flex flex-col items-center w-[650px] bg-[#E9F3DE] rounded-[78px] px-8 py-4">
+            <div className="flex flex-col items-center w-[650px] h-[264px] max-h-[264px] bg-[#E9F3DE] rounded-[78px] px-8 py-4">
                 <p className="text-[#507E1F] text-[13px]">레시피에 사용될 재료를 선택하세요.</p>
-                <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-5">
-                    {tags.map((tag, index) => {
-                        return(
-                            <div key={index} className="flex gap-1 text-[#507E1F]">
-                                <input
-                                type="checkbox"
-                                className="w-5 h-5 accent-gray-50"
-                                onChange={({target: {checked}})=> {
-                                    if (checked) {
-                                        setSelectedTags((prevSelectedTags) => [...prevSelectedTags, tag.category]);
-                                    } else {
-                                        setSelectedTags((prevSelectedTags) =>
-                                            prevSelectedTags.filter(atag => atag !== tag.category)
-                                        );
-                                    }
-                                    setIsUpdated(true);
-                                }}
-                                />
-                                {tag.name}
+
+                {/* 선택된 재료들 표시 */}
+                <div className="flex flex-row mt-1 gap-1">
+                    {selectedTags.length === 0 ? <div className="w-[95px] max-w-[95px] p-2 rounded-[15px] whitespace-nowrap text-[#E9F3DE] text-[16px]">EasterEgg^^</div>
+                    : selectedTags.map((each, index) => {
+                        const matchingTag = tags.find(tag => tag.category === each);
+                        const tagName = matchingTag? matchingTag.name : '';
+
+                        return (
+                            <div key={index} className="relative w-[95px] max-w-[95px] bg-[#507E1F] p-2 rounded-[15px] whitespace-nowrap text-white text-center text-[16px]">
+                                {tagName}
+                                <button
+                                    className="absolute right-1 text-red-200 hover:text-red-300"
+                                    onClick={() => { setSelectedTags((prevSelectedTags) => { return prevSelectedTags.filter(atag => atag !== matchingTag?.category)}) }}
+                                >X</button>
                             </div>
                         )
                     })}
                 </div>
+                
+                <hr className="mt-3 w-full border-solid border-gray-300"/>
+
+                <div className="flex flex-row mt-3 gap-2">
+                    <input
+                        placeholder="재료를 검색해 보세요."
+                        className="SearchInputCSS px-2 py-1 rounded-[8px] text-[15px]"
+                        value={searchInput}
+                        onChange={handleSearchInput}
+                    />
+                    <button onClick={findTag} className="text-lime-100 bg-lime-500 hover:bg-lime-600 px-3 py-1 text-[15px] rounded-[8px]">검색</button>
+                    <button onClick={handleReset} className="text-gray-700 bg-gray-300 hover:bg-gray-400 px-2 py-1 text-[15px] rounded-[8px]">초기화</button>
+                </div>
+
+                {!isSearchBtnClick? <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-3">
+                    {tags.map((tag, index) => {
+                        return(
+                            <div key={index} className="flex text-[#507E1F]">
+                                <button
+                                    className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
+                                    onClick={() => {
+                                        setSelectedTags((prevSelectedTags) => {
+                                            if (prevSelectedTags.includes(tag.category)) {
+                                                return prevSelectedTags;
+                                            } else {
+                                                return [...prevSelectedTags, tag.category];
+                                            }
+                                        });
+                                        setIsUpdated(true);
+                                    }}
+                                >
+                                    {tag.name}
+                                </button>
+                            </div>
+                        )
+                    })}
+                </div> : <div className="mt-4 items-center justify-center text-[#507E1F]">
+                    {/* 입력한 재료와 똑같은 게 존재하면 그 체크박스 띄워주고 없으면 없다고 표시, 처음에 몇개만 보여주고 ...누르면 전체 보기
+                        검색했다가 돌아오면 체크가 해제되네,,,,, 배열 새로 만들어서 저장해야 할 듯*/}
+                    {searchResult === '재료 목록에 존재하지 않습니다.'? searchResult :
+                    <button
+                        className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
+                        onClick={() => {
+                            const matchingTag = tags.find(tag => tag.name === searchResult);
+                            const tagCategory = matchingTag?.category;
+                            setSelectedTags((prevSelectedTags) => {
+                                if (prevSelectedTags.includes(tagCategory!)) {
+                                    return prevSelectedTags;
+                                } else {
+                                    return [...prevSelectedTags, tagCategory!];
+                                }
+                            });
+                            setIsUpdated(true);
+                        }}
+                    >
+                        {searchResult}
+                    </button>}
+                </div>}
             </div>
         </div>
 

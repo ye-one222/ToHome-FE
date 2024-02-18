@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
 import { houses } from '../../../interface/houses.tsx';
-import { useParams } from "react-router-dom"
+import { recipes } from '../../../interface/recipes.tsx';
+import { Link, useParams } from "react-router-dom"
 import Slider from "react-slick";
 
 type HouseDetailPageParams = {
@@ -46,12 +47,16 @@ const CommentComponent = ( { name, comment } ) => {
 }
 
 export const HouseDetailPage:React.FC = () => {
-    const imgUrl = ['/img/heart.png', '/img/emptyHeart.png']
+    const imgUrl = '/img/heart.png';
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<HouseDetailPageParams>();
     const index = houses.findIndex(recipe => recipe.post_id.toString() === id);
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
+    const [ isGoodsClick, setGoodsClick ] = useState(false);
+    const [ goodsIndex, setGoodsIndex ] = useState<number>();
+    const [ recipeTitle, setRecipeTitle ] = useState<string>('');
+    //url도 있어야함
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -68,6 +73,11 @@ export const HouseDetailPage:React.FC = () => {
         //벡이랑 연결 후
     }
 
+    const findRecipe = ( id: number ) => {
+        const recipe = recipes.filter(recipe => recipe.post_id===id);
+        setRecipeTitle(recipe[0].title);
+    }
+
     var settings = {
         dots: true,
         infinite: true,
@@ -81,14 +91,38 @@ export const HouseDetailPage:React.FC = () => {
         <div className="flex flex-col items-center">
             <Menu/>
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
-                <div className="flex items-center justify-center gap-10">
-                    <Slider {...settings} className="DetailSliderCSS">
-                        {imgUrl.map((url, index) => {
-                            return (
-                                <img key={index} src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-                            )
-                        })}
-                    </Slider>
+                <div className="flex items-center justify-center gap-10 relative">
+                    <img src={imgUrl} alt="Photo" className="w-[512px] h-[512px] max-w-[512px] max-h-[512px] rounded-[52px]" />
+                    {houses[index].relatedRecipes.map((each, index) => {
+                        return (
+                            <div className="absolute" style={{top: `${each.location.y}px`, left: `${each.location.x}px`}}>
+                                <button
+                                    key={index}
+                                    className="bg-[#85A563] rounded-[30px] text-white text-[18px] w-[24px] h-[24px]"
+                                    onMouseEnter={() => {
+                                        setGoodsClick(true);
+                                        setGoodsIndex(index);
+                                        findRecipe(each.post_id);
+                                    }}
+                                    onMouseLeave={() => {
+                                        setGoodsClick(false);
+                                    }}
+                                >+
+                                </button>
+                                {isGoodsClick && index===goodsIndex &&
+                                <Link to={`/recipe/${each.post_id}`}>
+                                    <div 
+                                        className="flex bg-[#ECF6E1] border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3"
+                                        onMouseEnter={() => { setGoodsClick(true) }}
+                                        onMouseLeave={() => { setGoodsClick(false) }}
+                                        >
+                                        {/* 이미지도 넣을까? */}
+                                        {recipeTitle}
+                                    </div>
+                                </Link>}
+                            </div>
+                        )
+                    })}
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
@@ -144,7 +178,7 @@ export const HouseDetailPage:React.FC = () => {
                 </div>
                 {houses[index].comments.map((each, index) => {
                     return (
-                        <CommentComponent name={each.name} comment={each.comment}/>
+                        <CommentComponent key={index} name={each.name} comment={each.comment}/>
                     )
                 })}
             </div>
