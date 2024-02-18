@@ -75,7 +75,6 @@ export const RecipeDetailPage:React.FC = () => {
             })
         })
         .then(() => {
-            // fetch 요청이 완료되었을 때 실행될 코드
             setIsUpdated(true);
             setNewComment('');
         })
