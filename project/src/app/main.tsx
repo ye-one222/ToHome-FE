@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import Slider from "react-slick";
 import { Menu } from "../interface/menu.tsx";
-import { recipes } from '../interface/recipes.tsx';
+import { ListData } from '../interface/ListData.tsx';
 import { topRecipes } from '../interface/topRecipes.tsx';
 import { Link } from "react-router-dom";
 
@@ -63,7 +63,7 @@ const RecipeCard = ({ post_id, title, username }) => {
                 <img src={imgUrl} alt="Photo" className="w-[245px] h-[245px] rounded-[20px]" />
                 */}
             </div>
-            <div className="flex justify-between items-end">
+            <div className="flex whitespace-nowrap justify-between items-end">
                 <h1 className="w-[132px] text-[20px] text-left text-black overflow-hidden">{title}</h1>
                 <div className="w-[80px] text-[17px] text-right text-[#00000080] overflow-hidden">{username}</div>
             </div>
@@ -72,51 +72,10 @@ const RecipeCard = ({ post_id, title, username }) => {
     )
 }
 
-interface Data {
-    content: [
-        {
-            id: number,
-            userId: 1,
-            title: string,
-            shortDescription: string,
-            content: string,
-            type: string,
-            materialCategory: number,
-            furnitureCategory: number,
-            imageUrl: string,
-            createdAt: string, //아니면 Date?
-            updatedAt: string
-        }
-    ],
-    pageable: {
-        pageNumber: number,
-        pageSize: number,
-        sort: {
-            empty: boolean,
-            sorted: boolean,
-            unsorted: boolean
-        },
-        offset: number,
-        paged: boolean,
-        unpaged: boolean
-    },
-    totalPages: number,
-    totalElements: number,
-    last: boolean,
-    size: number,
-    number: number,
-    sort: {
-        empty: boolean,
-        sorted: boolean,
-        unsorted: boolean
-    },
-    numberOfElements: number,
-    first: boolean,
-    empty: boolean
-}
+
 
 export const MainPage:React.FC = ()=>{
-    const [ recipesData, setRecipesData ] = useState<Data>();
+    const [ recipesData, setRecipesData ] = useState<ListData>();
     useEffect(() => {
         fetch("http://tobehome.kro.kr:8080/api/posts?page=1&size=100", {
             method: 'get',
@@ -127,7 +86,6 @@ export const MainPage:React.FC = ()=>{
         })
         .then(res => {return res.json()})
         .then(data => {
-            console.log(data);
             setRecipesData(data);
         });
     }, []);
