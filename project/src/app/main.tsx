@@ -1,4 +1,4 @@
-import React, {  } from "react"
+import React, { useEffect, useState } from "react"
 import Slider from "react-slick";
 import { Menu } from "../interface/menu.tsx";
 import { recipes } from '../interface/recipes.tsx';
@@ -55,12 +55,6 @@ const TopCard = ( {post_id, title, short_description, content, material_category
 }
 
 const RecipeCard = ({ post_id, title, username }) => {
-    /*const [imgUrl, setImgUrl] = useState('');
-    const [title, setTitle] = useState('');
-    const [user, setUser] = useState('');
-*/
-    //fetch로 GET 요청 -> 각각 저장
-
     return (
         <Link to={`/recipe/${post_id}`}>
         <div className="flex flex-col">
@@ -70,15 +64,74 @@ const RecipeCard = ({ post_id, title, username }) => {
                 */}
             </div>
             <div className="flex justify-between items-end">
-                <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{username}</div>
+                <h1 className="w-[132px] text-[20px] text-left text-black overflow-hidden">{title}</h1>
+                <div className="w-[80px] text-[17px] text-right text-[#00000080] overflow-hidden">{username}</div>
             </div>
         </div>
         </Link>
     )
 }
 
+interface Data {
+    content: [
+        {
+            id: number,
+            userId: 1,
+            title: string,
+            shortDescription: string,
+            content: string,
+            type: string,
+            materialCategory: number,
+            furnitureCategory: number,
+            imageUrl: string,
+            createdAt: string, //아니면 Date?
+            updatedAt: string
+        }
+    ],
+    pageable: {
+        pageNumber: number,
+        pageSize: number,
+        sort: {
+            empty: boolean,
+            sorted: boolean,
+            unsorted: boolean
+        },
+        offset: number,
+        paged: boolean,
+        unpaged: boolean
+    },
+    totalPages: number,
+    totalElements: number,
+    last: boolean,
+    size: number,
+    number: number,
+    sort: {
+        empty: boolean,
+        sorted: boolean,
+        unsorted: boolean
+    },
+    numberOfElements: number,
+    first: boolean,
+    empty: boolean
+}
+
 export const MainPage:React.FC = ()=>{
+    const [ recipesData, setRecipesData ] = useState<Data>();
+    useEffect(() => {
+        fetch("http://tobehome.kro.kr:8080/api/posts?page=1&size=100", {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            console.log(data);
+            setRecipesData(data);
+        });
+    }, []);
+
     var settings = {
         dots: true,
         infinite: true,
@@ -107,10 +160,22 @@ export const MainPage:React.FC = ()=>{
 
         {/* 레시피들 3열 */}
         <div className="mt-10 grid grid-cols-3 gap-3">
-            {recipes.map((each, index) => {
-                return (
-                    <RecipeCard key={each.post_id} {...each}/>
-                )
+            {recipesData?.content.map((each,index) => {
+                const reversedIndex = recipesData.content.length - 1 - index;
+                const currentPost = recipesData.content[reversedIndex];
+
+                if(currentPost.type==='product'){
+                    return (
+                        <RecipeCard
+                            key={index}
+                            post_id={currentPost.id}
+                            title={currentPost.title}
+                            username={currentPost.userId}
+                        />
+                    )
+                }else {
+                    return null;
+                }
             })}
         </div>
     </div>

@@ -112,7 +112,8 @@ export const HouseDetailPage:React.FC = () => {
                                 {isGoodsClick && index===goodsIndex &&
                                 <Link to={`/recipe/${each.post_id}`}>
                                     <div 
-                                        className="flex bg-[#ECF6E1] border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3"
+                                        className="flex bg-white rounded-[30px] text-[#507E1F] p-3"
+                                        style={{opacity : 0.8}}
                                         onMouseEnter={() => { setGoodsClick(true) }}
                                         onMouseLeave={() => { setGoodsClick(false) }}
                                         >
