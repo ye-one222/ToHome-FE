@@ -3,25 +3,22 @@ import { Menu } from "../../../interface/menu.tsx"
 import { recipes } from '../../../interface/recipes.tsx';
 import { useParams } from "react-router-dom"
 import Slider from "react-slick";
+import { RecipeData } from "../../../interface/RecipeData.tsx";
+import { CommentData } from "../../../interface/CommentData.tsx";
 
 type RecipDetailPageParams = {
     id: string
 }
 
-const UsedCategory = (type: string, index: number) => {
+const UsedCategory = (type: string, category: number|undefined) => {
     return (
         <div className={`mt-10 ${type==="가구 종류"? 'bg-[#DEF0CA]' : 'bg-[#F8FBF4]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
             <h1 className="text-[30px] text-[#507E1F]">{type}</h1>
             <div className="flex overflow-x-auto min-h-[40px]">
-                {type==="가구 종류"? recipes[index].furniture_category.map((each, index) => {
-                return (
-                    <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
-                )
-                }) : recipes[index].material_category.map((each, index) => {
-                    return (
-                        <div key={index} className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{each}</div>
-                    )
-                })} 
+                {type==="가구 종류"? 
+                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                }
             </div>
         </div>
     )
@@ -49,9 +46,10 @@ export const RecipeDetailPage:React.FC = () => {
     const imgUrl = ['/img/logo.png', '/img/hand.png']
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
-    const index = recipes.findIndex(recipe => recipe.post_id.toString() === id);
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
+    const [ thisRecipe, setThisRecipe ] = useState<RecipeData>();
+    const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -65,8 +63,46 @@ export const RecipeDetailPage:React.FC = () => {
     }, [newComment])
     
     const postComment = () => {
-        //벡이랑 연결 후
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
+            method: 'post',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8; int",
+                "user_id":localStorage.getItem("user-id")!,
+            },
+            body: JSON.stringify({
+                content: newComment
+            })
+        })
     }
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisRecipe(data);
+            console.log(data);
+        })
+
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisComments(data);
+            console.log(data);
+        })
+    }, []);
 
     var settings = {
         dots: true,
@@ -96,7 +132,7 @@ export const RecipeDetailPage:React.FC = () => {
                 <div className="mt-2 flex items-center justify-end gap-1">
                     <div className="flex-col">
                         <div className="text-right text-[13px] text-[#000000b2]">made by</div>
-                        <div className="text-right text-[17px] text-[#000000b2]">{recipes[index].username}</div>
+                        <div className="text-right text-[17px] text-[#000000b2]">{thisRecipe?.userId}</div>
                     </div>
                     <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
                         {/* 사진 자리 - 나중에 이걸로 교체
@@ -114,16 +150,16 @@ export const RecipeDetailPage:React.FC = () => {
                 </div>
 
                 <div className="flex flex-col p-5">
-                    <h1 className="min-h-[45px] text-[40px] font-bold text-[#6C9441] overflow-y-hidden">{recipes[index].title}</h1>
+                    <h1 className="min-h-[45px] text-[40px] font-bold text-[#6C9441] overflow-y-hidden">{thisRecipe?.title}</h1>
                     <hr className="w-full bg-black mt-2 mb-2"/>
-                    <div className="min-h-[60px] text-[20px] whitespace-pre-wrap overflow-y-hidden">{recipes[index].short_description}</div>
+                    <div className="min-h-[60px] text-[20px] whitespace-pre-wrap overflow-y-hidden">{thisRecipe?.shortDescription}</div>
                     <div className="flex bg-[#F8FBF4] rounded-[52px] p-8">
-                        <div className="min-h-[70px] text-[15px] whitespace-pre-wrap overflow-y-hidden">{recipes[index].content}</div>
+                        <div className="min-h-[70px] text-[15px] whitespace-pre-wrap overflow-y-hidden">{thisRecipe?.content}</div>
                     </div>
                     
                     <hr className="w-full bg-black mt-10 mb-2"/>
-                    {UsedCategory('가구 종류', index)}
-                    {UsedCategory('사용재료', index)}
+                    {UsedCategory('가구 종류', thisRecipe?.furnitureCategory)}
+                    {UsedCategory('사용재료', thisRecipe?.materialCategory)}
                 </div>
             </div>
                         
@@ -144,9 +180,9 @@ export const RecipeDetailPage:React.FC = () => {
                     >작성
                     </button>
                 </div>
-                {recipes[index].comments.map((each, index) => {
+                {thisComments.map((each, index) => {
                     return (
-                        <CommentComponent name={each.name} comment={each.comment}/>
+                        <CommentComponent key={each.id} name={each.userId} comment={each.content}/>
                     )
                 })}
             </div>

@@ -72,8 +72,6 @@ const RecipeCard = ({ post_id, title, username }) => {
     )
 }
 
-
-
 export const MainPage:React.FC = ()=>{
     const [ recipesData, setRecipesData ] = useState<ListData>();
     useEffect(() => {

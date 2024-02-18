@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 //import { Link } from "react-router-dom"
 import { Menu } from "../interface/menu.tsx";
-import { houses } from '../interface/houses.tsx';
 import { ListData } from '../interface/ListData.tsx';
 import { topHouses } from '../interface/topHouses.tsx';
 import Slider from "react-slick";
