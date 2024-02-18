@@ -59,7 +59,7 @@ export const LoginPage:React.FC = () => {
                 console.log(data.token)
                 //토큰 받아서 로컬 스트리지 or 세션 스토리지에 저장 + 로그아웃할때 취소
                 localStorage.setItem("login-token",data.token)
-                localStorage.setItem("user-nickname", userId)
+                localStorage.setItem("user-id", data.id)
                 setLoginFin(true)
             }
             else{
@@ -93,7 +93,7 @@ export const LoginPage:React.FC = () => {
                 <img className='ml-3 w-[23px] h-[23px]' alt="guest" src="/img/lock.png"/>
                 <input 
                     onChange={handlePW}
-                    type="text" 
+                    type="password" 
                     placeholder="password" 
                     className="LoginInput font-semibold w-full"/>
                 
