@@ -1,15 +1,8 @@
 import React from "react";
 import { useState } from "react";
 
-interface MyString{
-    userId:string;
-}
-/*이거를 안해주고 그냥 스트링으로 썼는데
- Type '{ props: string; }' is not assignable to type 'string'
- 이에러 나서 인터페이스로 만들어줌 - 해결*/
-
-export const MyRecipePage:React.FC<MyString> = ( {userId} ) => {
-    //user_id 인자로 받고 fetch해서 내 게시글들 가져와
+export const MyRecipePage:React.FC = ( ) => {
+    //user_id 로컬스트리지이용, fetch해서 내 게시글들 가져와
     const myRecipes = [
         {
             title: 'This is Title1',
@@ -58,7 +51,7 @@ export const MyRecipePage:React.FC<MyString> = ( {userId} ) => {
         },
         
     ]
-    console.log(userId)
+    console.log()
     const [ IsLiked, ] = useState(false);
 
     return <div>

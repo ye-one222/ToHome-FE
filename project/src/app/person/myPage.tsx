@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Menu } from "../../interface/menu.tsx";
 import { MyRecipePage } from "../../interface/myRecipes.tsx";
 const myRecipes = [
@@ -72,15 +72,25 @@ const ScrapPage:React.FC = () => {
 }
 
 const MyPageEDIT:React.FC = () => {
-    const myId = 'bowoon1216'; const myName = '정보운'; const myEmail = 'happyanne200212@gmail.com'
+    const [ userId, setUserId ] = useState<string>('')
+    const [ email, setEmail ] = useState<string>('')
 
     const [ imgFile, setImgFile ] = useState('')
     const [ imgBase64, setImgBase64 ]= useState('')
     const [ IsIdChecked, setIsIdChecked ] = useState(true)
     const [ IsEmailChecked, setIsEmailChecked ] = useState(true)
-  
+
+    useEffect(() => {
+        if(localStorage.getItem("user-nickname")){
+        //user의 정보 받아오기
+        setUserId(localStorage.getItem("user-nickname")!)
+        setEmail("아직 fetch안해서 모름ㅋㅋ")
+        //이 유저의 게시글들 받아서 배열에 저장 하기
+        }
+    },[]);
+
     const handleCheckId = () => {
-        //db에 요청 -> 이 아이디 있는지? -> 이걸 form으로 해도됨
+        //서버에 아이디만 보내서 중복확인 
         //중복이면
         //alert("아이디가 중복됩니다. 다른 아이디로 시도하세요:]")
         //중복아니면
@@ -103,7 +113,7 @@ const MyPageEDIT:React.FC = () => {
     }
 
     const handleSaveBtn = () => {
-        //여기서 새로운 아이디, 이름, 이메일을 서버로 이동
+        //여기서 새로운 사진, 아이디, 이메일을 서버로 이동
         if(IsEmailChecked&&IsIdChecked){
             //서버로 이동
         }else{
@@ -151,7 +161,7 @@ const MyPageEDIT:React.FC = () => {
     <form className="flex gap-3">
         <input 
         type="text" 
-        placeholder={myId} 
+        placeholder={userId} 
         onChange={() => { setIsIdChecked(false) }}
         className="MyPageEditInput"/>
         <button 
@@ -161,15 +171,10 @@ const MyPageEDIT:React.FC = () => {
             중복확인</button>
     </form>
     
-    <input 
-    type="text" 
-    placeholder={myName} 
-    className="MyPageEditInput"/>
-    
     <form className="flex gap-3">
         <input 
         type="text" 
-        placeholder={myEmail} 
+        placeholder={email} 
         onChange={() => { setIsEmailChecked(false) }}
         disabled={ IsEmailChecked } 
         className="MyPageEditInput"/>
@@ -180,17 +185,27 @@ const MyPageEDIT:React.FC = () => {
             중복확인</button>
     </form>
     <div className="flex justify-evenly mt-5">
-        <button onClick={handleCancelBtn} className="w-1/3 h-[45px] bg-red-100 text-red-400 rounded-2xl border border-red-100 hover:border-red-400 transition-all">취소</button>
-        <button onClick={handleSaveBtn} className="w-1/3 bg-[#DEF0CA] text-[#507e1f] rounded-2xl border border-[#DEF0CA] hover:border-[#507e1f] transition-all">저장</button>
+        <button onClick={ handleCancelBtn } className="w-1/3 h-[45px] bg-red-100 text-red-400 rounded-2xl border border-red-100 hover:border-red-400 transition-all">취소</button>
+        <button onClick={ handleSaveBtn } className="w-1/3 bg-[#DEF0CA] text-[#507e1f] rounded-2xl border border-[#DEF0CA] hover:border-[#507e1f] transition-all">저장</button>
     </div>
 </div>
 }
 
-export const MyPage:React.FC = ()=>{
-    const myId = 'bowoon1216'; const myName = '정보운'; const myEmail = 'happyanne200212@gmail.com'
+export const MyPage:React.FC = () => {
+    const [ userId, setUserId ] = useState<string>('')
+    const [ email, setEmail ] = useState<string>('')
+
     const [ IsMyRecipe, setIsMyRecipe ] = useState(true)
     const [ IsScrap, setIsScrap ] = useState(false)
     
+    useEffect(() => {
+        if(localStorage.getItem("user-nickname")){
+        //user의 정보 받아오기
+        setUserId(localStorage.getItem("user-nickname")!)
+        setEmail("아직 fetch안해서 모름ㅋㅋ")
+        //이 유저의 게시글들 받아서 배열에 저장 하기
+        }
+    },[]);
     
     return <div className=" flex flex-col items-center">
 
@@ -199,9 +214,8 @@ export const MyPage:React.FC = ()=>{
         <div className="absolute top-[30px] h-[120px] flex gap-3 w-1/3 min-w-[400px] max-w-[604px] p-3 bg-[#F2F8E9] border border-[#A1BB84] rounded-xl">
             <img className='bg-zinc-100 rounded-[20px] w-[85px]' alt="myPage" src="/img/guest.png"/>
             <div className="flex flex-col mt-auto">
-                <h1 className="text-[#507e1f] text-[30px]">{myId}</h1>
-                <h1 className="text-[#B1C799] text-[15px]">{myName}</h1>
-                <h1 className="text-[#B1C799] text-[15px]">{myEmail}</h1>
+                <h1 className="text-[#507e1f] text-[30px]">{userId}</h1>
+                <h1 className="text-[#B1C799] text-[15px]">{email}</h1>
             </div>
         </div>
         
@@ -221,7 +235,7 @@ export const MyPage:React.FC = ()=>{
 
             <div className="absolute top-[120px] border-t border-t-[#DEF0CA] bg-white rounded-[30px] w-full p-5">
                 { IsMyRecipe ? 
-                    <MyRecipePage userId = ''/>
+                    <MyRecipePage />
                     :
                     IsScrap ? 
                         < ScrapPage />

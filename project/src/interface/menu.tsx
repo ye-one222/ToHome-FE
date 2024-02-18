@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../tailwind.css';
 import { Link, NavLink } from "react-router-dom";
 
 export const Menu = (): JSX.Element => {
     const logoUrl = '/img/logo.png';
     const postImgUrl = '/img/pencil.png'
-    const [ IsLogin, setIsLogin ] = useState(true)
+    const [ IsLogin, setIsLogin ] = useState(false)
     //const [whatActiveBtn, setWhatActiveBtn] = useState('')
     const menus = [
         { name: "Main", path: "/" },
@@ -13,7 +13,25 @@ export const Menu = (): JSX.Element => {
         { name: "Search", path: "/search" },
         { name: "My", path: "/mypage"} //나중에는 아마 사용자 id 들어가야 할듯
     ];
-
+    useEffect(() => {
+        if(localStorage.getItem("login-token")){
+        //로그인 된 상태라면 
+        setIsLogin(true)
+        /*
+        fetch(`http://tobehome.kro.kr:8080/users/${localStorage.getItem("user-nickname")}`, {
+            method: 'GET',
+            headers: {
+                "Content-Type":"application/json; charset=utf-8",
+                Authorization: localStorage.getItem("login-token") as string,
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => console.log(data));
+        */
+    }}
+    ,[])
+    
+    
     return (
         <div className="MenuCSS flex flex-col items-center absolute right-3/4 top-5 md:w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
             <div className="flex flex-row items-center justify-center mt-[20px] w-[175px] h-[114px] bg-[#f6ffee] rounded-[50px]">
@@ -62,9 +80,12 @@ export const Menu = (): JSX.Element => {
                         Sign Up
                     </button></Link>
                 </div>:
-                <Link to={'/'}><button onClick={() => { setIsLogin(false)}} className="flex justify-center w-[172px] py-[12px] bg-[#B4CE97] text-[white] rounded-[8px] hover:text-[#507e1f] transition-all">
-                        Logout
-                </button></Link>
+                <div>
+                    <h1 className="flex items-center justify-center text-[14px] mb-5">{localStorage.getItem("user-nickname")}님 환영합니다!</h1>
+                    <Link to={'/'}><button onClick={() => { setIsLogin(false); localStorage.removeItem("login-token"); }} className="flex justify-center w-[172px] py-[12px] bg-[#B4CE97] text-[white] rounded-[8px] hover:text-[#507e1f] transition-all">
+                            Logout
+                    </button></Link>
+                </div>
                 }
             </div>
             
@@ -73,9 +94,8 @@ export const Menu = (): JSX.Element => {
                 <Link to='/post'><img src={postImgUrl} alt = "postImgUrl"/></Link>
                 :<img src={postImgUrl} onClick={() => { alert("로그인을 해주세요") }} alt = "postImgUrl"/>
             }
-            <Link to='/post'><button className="absolute top-[600px] left-[10px]" >post 페이지로 이동 버튼</button></Link>
-            <Link to='/guest'><button className="absolute top-[650px] left-[10px]">남의 프로필로 이동 버튼</button></Link>
-            
+           
         </div>
     );
 };
+
