@@ -17,7 +17,7 @@ export const GuestProfilePage:React.FC = () => {
             </div>
         </div>
         <div className="absolute top-[200px] left-[27%] bg-white rounded-[30px] w-1/2 p-5">
-            <MyRecipePage userId = ''/>
+            <MyRecipePage />
         </div>
     
     </div>

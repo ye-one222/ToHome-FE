@@ -1,5 +1,6 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Menu } from "../interface/menu.tsx"
+import { PostData } from "../interface/PostData.tsx";
 
 
 interface goodsBtnType {
@@ -13,17 +14,16 @@ const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId}) => {
 
     return <div>
         <button 
-        onClick={() => { setGoodsBtnClick(true) }}
+        onMouseEnter={() => {  setGoodsBtnClick(true) }}
+        onMouseLeave={() => {  setGoodsBtnClick(false) }}
         style={{ position: 'absolute', top: y+40 , left: x+40, opacity : 0.7,}} 
         className={`flex items-center justify-center text-white bg-[#507E1F] rounded-[30px] w-5 h-5 `}>+</button>
         { goodsBtnClick && 
         <div 
+        onMouseEnter={() => {  setGoodsBtnClick(true) }}
+        onMouseLeave={() => {  setGoodsBtnClick(false) }}
         style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
-        className="flex flex-col gap-3 bg-white rounded-[30px] p-3">
-            <button 
-            onClick={() => { setGoodsBtnClick(false) }} 
-            className="ml-auto hover:text-red-500">
-                close</button>
+        className="flex bg-white border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3">
             <h1>{postId}</h1>
         </div>}
     </div>
@@ -78,21 +78,33 @@ export const PostPage:React.FC = () => {
         },
         
     ]
-
+    //const [newRecipe, setNewRecipe ] = useState<PostData>();
+    let newRecipe:PostData={
+        id: 0,
+        userId: 0,
+        title: '',
+        shortDescription: '',
+        content: '',
+        type: '',
+        materialCategory: 0,
+        furnitureCategory: 0,
+        imageUrl: '',
+        createdAt: '', //아니면 Date?
+        updatedAt: ''
+    }
     const [ IsRecipe, setIsRecipe ] = useState(false);
     const [ IsHouse, setIsHouse ] = useState(false);
     
     const [ photosSrc, setPhotosSrc ] = useState<string[]>([])
     const [ imgBase64, setImgBase64 ] = useState('')
     
-    const [ Source, setSource ] = useState<string[]>([])
+    const [ Source, setSource ] = useState<string|null>(null)//
     const [ addSourceInput, setAddSourceInput ] = useState<string>('')
-
-    const [ Furniture, setFurniture ] = useState<string[]>([])
+    const [ Furniture, setFurniture ] = useState<string|null>(null)//
     const [ addFurnitureInput, setAddFurnitureInput ] = useState<string>('')
     
-    const bestSource = ['플라스틱','유리','정제된 나무','플라스틱','유리','정제된 나무','플라스틱','유리','정제된 나무']
-    const bestFurniture = ['의자','간이책상','서랍장']
+    const [ bestSource, setBestSource ] = useState([])
+    const [ bestFurniture, setbestFurniture ] = useState([])
 
     const [ IsHousePhoto, setIsHousePhoto ] = useState(false)
     //const [ EditingGoods, setEditingGoods ] = useState(false)
@@ -101,6 +113,69 @@ export const PostPage:React.FC = () => {
     const [ xy, setXY ] = useState({x:0, y:0})
     const [ goodsPostId, setGoodsPostId ] = useState<string|null>(null)
     //goodsBtn 배열은 각 버튼의 위치와 게시글 아이디를 가지고 있음
+
+    useEffect(() => {
+        //재료 카테고리 목록 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/material', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+        setBestSource(data)//console.log("bestM: ",bestM) 비동기? 라서 바로 안나옴
+        });
+
+        //가구 카테고리 목록 전체 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+        setbestFurniture(data)
+        console.log("가구:", data)
+        });
+    },[]);
+    
+    //post 
+    const handlePost = () => {
+        console.log(newRecipe)//엥 이게 하나도 안됐는데..?
+        //서버에게 보내기.. 전에 공란있는지 확인하면 좋을듯!!!!!!!!!!
+        fetch('http://tobehome.kro.kr:8080/api/posts', {
+            method: 'post',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+                "user_id" : localStorage.getItem("user-id") as string,
+            },
+            body: JSON.stringify({
+                title: newRecipe.title,
+                shortDescription: newRecipe.shortDescription,
+                content: newRecipe.content,
+                type: newRecipe.type,
+                materialCategory: newRecipe.materialCategory,
+                furnitureCategory: newRecipe.furnitureCategory,
+                imageUrl: newRecipe.imageUrl,
+                //x:0,
+                //y:0,
+            })
+        })
+        .then((response) => { console.log(response); return response.json()})
+        .then((data) => { 
+            if(data){
+                console.log("post :",data)
+            }
+            else{
+                alert(data.message);
+            }
+        });
+    }
 
     const LocatePhotos = (photosrc) => {
         //이미지 주소 복사 할때의 그 주소를 넣으면 되긴함
@@ -128,16 +203,20 @@ export const PostPage:React.FC = () => {
     }
 
     const Input3Component = (props:string) => {
+        
         return <div className="flex flex-col gap-5 ">
             <input 
             type="text"
+            onChange={(e) => {  newRecipe.title=e.currentTarget.value }}
             placeholder="제목을 입력하세요"
             className="bg-[#DEF0CA] text-[30px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[80px] focus:outline-none active:translate-y-1"/>
             <input 
             type="text"
+            onChange={(e) => { newRecipe.shortDescription=e.currentTarget.value }}
             placeholder={`${props}에 대해 간단히 설명해주세요!`}
             className="bg-[#F8FBF4] text-[20px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[50px] focus:outline-none active:translate-y-1"/>
             <textarea 
+            onChange={(e) => { newRecipe.content=e.currentTarget.value }}
             placeholder={`${props}에 대한 설명을 자세하게 해주세요!`}
             className="bg-[#F8FBF4] text-[20px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[400px] focus:outline-none resize-none active:translate-y-1">
             </textarea>
@@ -145,32 +224,26 @@ export const PostPage:React.FC = () => {
     }
 
     const UsedComponent = ( props:string, best ) => {
+
         let flag = true
-        if(props === '사용재료'){ flag = true }
+        if(props === '주사용재료'){ flag = true }
         else { flag = false }
 
         return <div>
                 <div className={`mt-10 ${flag ? 'bg-[#F8FBF4]':'bg-[#DEF0CA]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
                     <h1 className="text-[30px] text-[#507E1F]">{props}</h1>
                     <div className="flex overflow-x-auto min-h-[40px]">
-                    { (flag ? Source:Furniture).map((each, index) => {
-                        return <div className="flex items-center gap-2 h-[40px] bg-[#507E1F] text-white rounded-[30px] p-2 mr-3 whitespace-nowrap">
-                            <div>{each}</div>
+                        { (flag ? Source:Furniture) && 
+                        <div className="flex items-center gap-2 h-[40px] bg-[#507E1F] text-white rounded-[30px] p-2 mr-3 whitespace-nowrap">
+                            <div>{(flag ? Source:Furniture)}</div>
                             <button 
-                            onClick={ () => 
-                                { (flag ? setSource:setFurniture)(
-                                    (flag ? Source:Furniture).filter( function(_, indexx) 
-                                        { return index !== indexx } )
-                                ) } 
-                            } 
+                            onClick={ () => { (flag ? setSource:setFurniture)(null)}} 
                             className=" text-red-200 hover:text-red-300">
                                 x</button>
-                        </div>
-                        } 
-                    ) }
+                        </div> }
                     </div>
                 </div>
-                <div className={`${props === '사용재료' ? 'bg-[#F8FBF4]':'bg-[#DEF0CA]'} rounded-[30px] p-10`}>
+                <div className={`${props === '주사용재료' ? 'bg-[#F8FBF4]':'bg-[#DEF0CA]'} rounded-[30px] p-10`}>
 
                     <input
                     type="text"
@@ -181,12 +254,24 @@ export const PostPage:React.FC = () => {
                     
                     <button 
                     onClick={() => { 
-                        if((flag ? Source:Furniture)
-                            .indexOf((flag ? addSourceInput:addFurnitureInput)) === -1) //현재 배열에 없다면
-                        {   
-                            (flag ? setSource:setFurniture)([...(flag ? Source:Furniture), (flag ? addSourceInput:addFurnitureInput)]);   //배열에 추가
-                        }
-                        (flag ? setAddSourceInput:setAddFurnitureInput)('')
+                        (flag ? setSource:setFurniture)((flag ? addSourceInput:addFurnitureInput))
+                        //무조건 추가해보고 상태 400이면 안하는거로
+                        const url = `http://tobehome.kro.kr:8080/api/categories/${flag ? 'material':'furniture'}`
+                        fetch(url, {
+                            method: 'post',
+                            headers: {
+                                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                                "Content-Type":"application/json; charset=utf-8",
+                            },
+                            body: JSON.stringify({
+                                name: (flag ? addSourceInput:addFurnitureInput)
+                            })
+                        })
+                        .then((res) => { if(res.status === 201){ return res.json() } })
+                        .then((data) => { 
+                            if(flag){ newRecipe.materialCategory = data.id }
+                            else{ newRecipe.furnitureCategory = data.id }
+                            });
                         }} 
                     className="bg-[#B4CE97] h-[40px] w-[50px] rounded-[30px] text-[15px] text-[#507E1F] p-1">
                         추가
@@ -196,20 +281,11 @@ export const PostPage:React.FC = () => {
                         <h1 className="text-[15px] text-[#507E1F]">Best!</h1>
                     {best.map((each) => {
                         return <button 
-                        onClick={() => { 
-                            if( IsRecipe && !flag && Furniture.length === 1 ) //레시피 포스트, 가구종류, 이미 한개일때
-                            {  
-                                alert(" 레시피 게시글에서는 가구 종류를 하나만 선택해주세요! ")
-                            }
-                            else
-                            {
-                                if((flag ? Source:Furniture).indexOf(each) === -1) {
-                                    (flag ? setSource:setFurniture)([...(flag ? Source:Furniture), each])
-                                }
-                            }
-                        }} 
+                        onClick={() => { (flag ? setSource:setFurniture)(each.name); 
+                            if(flag){ newRecipe.materialCategory=each.id }
+                            else{ newRecipe.furnitureCategory=each.id }}} 
                         className={`${flag ? 'bg-[#DEF0CA]':'bg-[#F8FBF4]'} text-[#507E1F] rounded-[30px] p-2 active:-translate-y-1 whitespace-nowrap`}>
-                            {each}
+                            { each.name !== '' && each.name }
                         </button>
                     })}
                     </div>
@@ -263,14 +339,17 @@ export const PostPage:React.FC = () => {
 
         {!IsRecipe && !IsHouse &&
         <div className="absolute left-[40%] top-[20%]">
-            <button onClick={() => { setIsRecipe(true) }} className="absolute text-[20px] sm:text-[50px] bg-[#DEF0CA] rounded-[30px] sm:w-0  hover:text-[52px] hover:w-[210px] transition-all">Recipe POST</button>
-            <button onClick={() => { setIsHouse(true) }} className="absolute top-[200px] text-[20px] sm:text-[50px] bg-[#B4CE97] rounded-[30px] sm:w-0 hover:text-[52px] hover:w-[210px] transition-all">House POST</button>
+            <button onClick={() => { setIsRecipe(true); newRecipe.type='product' }} className="absolute text-[20px] sm:text-[50px] bg-[#DEF0CA] rounded-[30px] sm:w-0  hover:text-[52px] hover:w-[210px] transition-all">Recipe POST</button>
+            <button onClick={() => { setIsHouse(true); newRecipe.type='interior' }} className="absolute top-[200px] text-[20px] sm:text-[50px] bg-[#B4CE97] rounded-[30px] sm:w-0 hover:text-[52px] hover:w-[210px] transition-all">House POST</button>
         </div>
         }
 
         { IsRecipe && 
         <div className="absolute top-[93px] w-[50%] lg:w-[40%] bg-white rounded-[50px] p-10">
-            <button className="absolute -top-[60px] left-[80%] bg-[#E9F3DE] rounded-[4px] text-[#507E1F] text-[16px] w-[139px] h-[50px] font-semibold shadow-md hover:w-[145px] hover:h-[55px] hover:left-[79%] hover:-top-[62px] active:translate-y-1">POST</button>
+            <button 
+            onClick={ handlePost } 
+            className="absolute -top-[60px] left-[80%] bg-[#E9F3DE] rounded-[4px] text-[#507E1F] text-[16px] w-[139px] h-[50px] font-semibold shadow-md hover:w-[145px] hover:h-[55px] hover:left-[79%] hover:-top-[62px] active:translate-y-1">
+                POST</button>
             <div className="flex flex-row overflow-x-auto gap-5">
                 { photosSrc.map( (each) => LocatePhotos(each) ) }
                 <label
@@ -288,14 +367,18 @@ export const PostPage:React.FC = () => {
                 { Input3Component('레시피') }
             </div>
 
-            { UsedComponent('가구 종류', bestFurniture) }
-            { UsedComponent('사용재료', bestSource) }
+            { UsedComponent('대표 가구 종류', bestFurniture) }
+            { UsedComponent('주사용재료', bestSource) }
 
         </div>
         }
 
         { IsHouse &&
         <div className="absolute top-[93px] w-[50%] lg:w-[40%] bg-white rounded-[50px] p-10">
+            <button 
+            onClick={ handlePost } 
+            className="absolute -top-[60px] left-[80%] bg-[#E9F3DE] rounded-[4px] text-[#507E1F] text-[16px] w-[139px] h-[50px] font-semibold shadow-md hover:w-[145px] hover:h-[55px] hover:left-[79%] hover:-top-[62px] active:translate-y-1">
+                POST</button>
             <div className="w-full flex items-center justify-center">
                 { IsHousePhoto ?
                 <div onMouseMove={(e) => { setXY({x:e.clientX - 550, y:e.clientY -100}) }}>
@@ -354,8 +437,8 @@ export const PostPage:React.FC = () => {
                 { Input3Component('집') }
             </div>
 
-            { UsedComponent('가구 종류', bestFurniture) }
-            { UsedComponent('사용재료', bestSource) }
+            { UsedComponent('대표 가구 종류', bestFurniture) }
+            { UsedComponent('주사용재료', bestSource) }
         </div>
         }
     </div>
