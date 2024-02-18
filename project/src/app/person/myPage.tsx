@@ -1,70 +1,58 @@
 import React, { useEffect, useState } from "react";
 import { Menu } from "../../interface/menu.tsx";
 import { MyRecipePage } from "../../interface/myRecipes.tsx";
-const myRecipes = [
-    {
-        title: 'This is Title1',
-        content: 'This is contentssssss111',
-        liked: 15
-    },
-    {
-        title: 'This is Title2',
-        content: 'This is contentssssss222',
-        liked: 8
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    {
-        title: 'This is Title33',
-        content: 'This is contentssssss333',
-        liked: 9
-    },
-    
-]
+import { PostData } from "../../interface/PostData.tsx";
+import { Link } from "react-router-dom";
 
 const ScrapPage:React.FC = () => {
+    const [ iLikes, setILikes ] = useState<PostData[]>([])
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/likedByUser/${localStorage.getItem("user-id")}`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+            if(data){ setILikes(data) }
+            else{ /*alert(data.message)*/ }
+        });
+},[]);
+
     return <div>
-    <h1 className="text-[#507e1f] text-[30px] font-semibold">Scrap - {myRecipes.length}</h1>
+    <h1 className="text-[#507e1f] text-[30px] font-semibold">Scrap - {iLikes.length}</h1>
     <div className="grid grid-cols-3 gap-4 max-h-[500px] overflow-y-auto overflow-x-hidden">
-    {myRecipes.map((each) => {
+    {iLikes.map((each) => {
+        let likeCount = 0;
+         //게시글 좋아요 수 조회
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${each.id}/likeCount`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+            if(data){ likeCount = data }
+            else{/* alert(data.message) */}
+        });
+
         return (
-        <div>{/*<Link to=''> </Link>*/}
-            <img className='w-[260px] bg-zinc-100 rounded-[20px]' src="/img/logo.png" alt={each.title}/>
+        <div>
+            <Link to={`/recipe/${each.id}`}> 
+            <img className='w-[260px] bg-zinc-100 rounded-[20px]' src="{each.imageUrl}" alt={each.title}/>
             <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
                 <h1 className="overflow-hidden">{each.title}</h1>
                 <div className="flex flex-row ml-auto">
                 <img className='w-[24px]' src="/img/heart.png" alt="heart"/>
-                <h1>{each.liked}</h1>
+                <h1>{likeCount}</h1>
                 </div>
             </div>
+            </Link>
         </div>)
     })}
     </div>
@@ -81,12 +69,18 @@ const MyPageEDIT:React.FC = () => {
     const [ IsEmailChecked, setIsEmailChecked ] = useState(true)
 
     useEffect(() => {
-        if(localStorage.getItem("user-nickname")){
-        //user의 정보 받아오기
-        setUserId(localStorage.getItem("user-nickname")!)
-        setEmail("아직 fetch안해서 모름ㅋㅋ")
-        //이 유저의 게시글들 받아서 배열에 저장 하기
-        }
+        /*fetch(`http://tobehome.kro.kr:8080/아이디로 개인정보 불러오기!`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+            if(data){ console.log(data) }
+            else{ alert(data.message) }
+        });*/
     },[]);
 
     const handleCheckId = () => {
@@ -109,7 +103,6 @@ const MyPageEDIT:React.FC = () => {
         //모든걸 그대로 , 마이 페이지로 오게끔
         setIsIdChecked(false)
         setIsEmailChecked(false)
-
     }
 
     const handleSaveBtn = () => {
