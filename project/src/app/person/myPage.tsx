@@ -3,6 +3,8 @@ import { Menu } from "../../interface/menu.tsx";
 import { MyRecipePage } from "../../interface/myRecipes.tsx";
 import { PostData } from "../../interface/PostData.tsx";
 import { Link } from "react-router-dom";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase.js";
 
 const ScrapPage:React.FC = () => {
     const [ iLikes, setILikes ] = useState<PostData[]>([])
@@ -113,6 +115,18 @@ const MyPageEDIT:React.FC = () => {
             alert("중복확인을 해주세요")
         }
     }
+    
+    const uploadFB = async (e) =>{
+        console.log(e.target.files[0]);
+        const uploaded_file = await uploadBytes(
+         ref(storage,`photos/${e.target.files[0].name}`
+         ),e.target.files[0]
+        );
+       ////추가로 url도 긁어볼까요?///
+        const file_url = await getDownloadURL(uploaded_file.ref);
+        console.log(file_url);
+        setImgFile(file_url)
+       }
 
     const saveImgFile = (event) => {
         //프사 미리보기 -> 외부 사진은 되는데(인터넷) 내컴터는꺼는 안됨...
@@ -135,7 +149,7 @@ const MyPageEDIT:React.FC = () => {
     return <div className="flex flex-col gap-5 max-h-[500px]">
     <div className="flex gap-4 mt-5">
         <img
-        src={ imgFile ? `/img/select/${imgFile}`:`/img/logo.png` }
+        src={ imgFile ? `${imgFile}`:`/img/logo.png` }
         alt='myProfile' 
         className="w-1/3 max-w-[200px] border border-[#DEF0CA] rounded-md"/>
         <div className="flex flex-col">
@@ -147,7 +161,7 @@ const MyPageEDIT:React.FC = () => {
             <input 
             type="file" 
             id="profilePhoto" 
-            onChange={ saveImgFile }
+            onChange={ uploadFB }
             className="hidden"/>
         </div>
     </div>
