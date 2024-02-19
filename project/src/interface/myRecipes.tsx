@@ -57,9 +57,10 @@ export const MyRecipePage:React.FC = ( ) => {
         });
         console.log(each)
         return (
-        <div className="h-[200px]">
+        <div className="">
             <Link to={`/recipe/${each.id}`}> 
-            <img className='bg-zinc-100 rounded-[20px]' src='{each.imageUrl}' alt={each.title}/>
+            <div className="flex items-center justify-center bg-zinc-100 rounded-[20px] h-[250px]">
+                <img className='rounded-[20px]' src={each.imageUrl} alt={each.title}/></div>
             <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
                 <h1 className="overflow-hidden">{each.title}</h1>
                 <div className="flex flex-row ml-auto mr-1">

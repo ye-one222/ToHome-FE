@@ -8,6 +8,8 @@ export interface PostData {
     materialCategory: number,
     furnitureCategory: number,
     imageUrl: string,
+    imageUrl2: string,
+    imageUrl3: string,
     createdAt: string, //아니면 Date?
     updatedAt: string
 }

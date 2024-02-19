@@ -1,85 +1,19 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../interface/menu.tsx"
 import { PostData } from "../interface/PostData.tsx";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase.js";
+import { Link } from "react-router-dom";
 
 
 interface goodsBtnType {
     x: number;
     y: number;
-    postId:string;
-}
-  
-const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId}) => {
-    const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
-
-    return <div>
-        <button 
-        onMouseEnter={() => {  setGoodsBtnClick(true) }}
-        onMouseLeave={() => {  setGoodsBtnClick(false) }}
-        style={{ position: 'absolute', top: y+40 , left: x+40, opacity : 0.7,}} 
-        className={`flex items-center justify-center text-white bg-[#507E1F] rounded-[30px] w-5 h-5 `}>+</button>
-        { goodsBtnClick && 
-        <div 
-        onMouseEnter={() => {  setGoodsBtnClick(true) }}
-        onMouseLeave={() => {  setGoodsBtnClick(false) }}
-        style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
-        className="flex bg-white border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3">
-            <h1>{postId}</h1>
-        </div>}
-    </div>
+    postId: number;
 }
 
 export const PostPage:React.FC = () => {
-    const myRecipes = [
-        {
-            title: 'This is Title1',
-            content: 'This is contentssssss111',
-            liked: 15
-        },
-        {
-            title: 'This is Title2',
-            content: 'This is contentssssss222',
-            liked: 8
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        {
-            title: 'This is Title33',
-            content: 'This is contentssssss333',
-            liked: 9
-        },
-        
-    ]
-    //const [newRecipe, setNewRecipe ] = useState<PostData>();
-    let newRecipe:PostData={
+    const [newRecipe, setNewRecipe ] = useState<PostData>({
         id: 0,
         userId: 0,
         title: '',
@@ -89,9 +23,13 @@ export const PostPage:React.FC = () => {
         materialCategory: 0,
         furnitureCategory: 0,
         imageUrl: '',
+        imageUrl2: '',
+        imageUrl3: '',
         createdAt: '', //아니면 Date?
         updatedAt: ''
-    }
+    });
+    const [ iLikes, setILikes ] = useState<PostData[]>([])
+    
     const [ IsRecipe, setIsRecipe ] = useState(false);
     const [ IsHouse, setIsHouse ] = useState(false);
     
@@ -107,12 +45,10 @@ export const PostPage:React.FC = () => {
     const [ bestFurniture, setbestFurniture ] = useState([])
 
     const [ IsHousePhoto, setIsHousePhoto ] = useState(false)
-    //const [ EditingGoods, setEditingGoods ] = useState(false)
     const [ goodsBtn, setGoodsBtn ] = useState<goodsBtnType[]>([])
     const [ addGoodsClick, setAddGoodsClick ] = useState(false)
     const [ xy, setXY ] = useState({x:0, y:0})
-    const [ goodsPostId, setGoodsPostId ] = useState<string|null>(null)
-    //goodsBtn 배열은 각 버튼의 위치와 게시글 아이디를 가지고 있음
+    const [ goodsPostId, setGoodsPostId ] = useState<number|null>(null)
 
     useEffect(() => {
         //재료 카테고리 목록 조회
@@ -124,10 +60,7 @@ export const PostPage:React.FC = () => {
             },
         })
         .then((response) => response.json())
-        .then((data) => { 
-        setBestSource(data)//console.log("bestM: ",bestM) 비동기? 라서 바로 안나옴
-        });
-
+        .then((data) => { setBestSource(data) });
         //가구 카테고리 목록 전체 조회
         fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
             method: 'GET',
@@ -137,86 +70,86 @@ export const PostPage:React.FC = () => {
             },
         })
         .then((response) => response.json())
-        .then((data) => { 
-        setbestFurniture(data)
-        console.log("가구:", data)
-        });
+        .then((data) => { setbestFurniture(data) });
+        //내가 좋아요한 게시글들 조회 - 일단 내가 만든 게시글로!!!(없어서 ㅜㅠㅠ)
+        fetch(`http://tobehome.kro.kr:8080/api/posts/user/${localStorage.getItem("user-id")}`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { setILikes(data) });
     },[]);
     
     //post 
     const handlePost = () => {
-        console.log(newRecipe)//엥 이게 하나도 안됐는데..?
-        //서버에게 보내기.. 전에 공란있는지 확인하면 좋을듯!!!!!!!!!!
-        fetch('http://tobehome.kro.kr:8080/api/posts', {
-            method: 'post',
-            headers: {
-                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
-                "Content-Type":"application/json; charset=utf-8",
-                "user_id" : localStorage.getItem("user-id") as string,
-            },
-            body: JSON.stringify({
-                title: newRecipe.title,
-                shortDescription: newRecipe.shortDescription,
-                content: newRecipe.content,
-                type: newRecipe.type,
-                materialCategory: newRecipe.materialCategory,
-                furnitureCategory: newRecipe.furnitureCategory,
-                imageUrl: newRecipe.imageUrl,
-                //x:0,
-                //y:0,
+        if( photosSrc.length === 0){ alert("사진을 골라주세요!") }
+        else{
+            //서버에게 보내기.. 전에 공란있는지 확인하면 좋을듯!!!!!!!!!!
+            fetch('http://tobehome.kro.kr:8080/api/posts', {
+                method: 'post',
+                headers: {
+                    "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                    "Content-Type":"application/json; charset=utf-8",
+                    "user_id" : localStorage.getItem("user-id") as string,
+                },
+                body: JSON.stringify({
+                    title: newRecipe.title,
+                    shortDescription: newRecipe.shortDescription,
+                    content: newRecipe.content,
+                    type: newRecipe.type,
+                    materialCategory: newRecipe.materialCategory,
+                    furnitureCategory: newRecipe.furnitureCategory,
+                    imageUrl: newRecipe.imageUrl,
+                    imageUrl2: newRecipe.imageUrl2,
+                    imageUrl3: newRecipe.imageUrl3,
+                })
             })
-        })
-        .then((response) => { console.log(response); return response.json()})
-        .then((data) => { 
-            if(data){
-                console.log("post :",data)
-            }
-            else{
-                alert(data.message);
-            }
-        });
+            .then((response) => { return response.json() })
+            .then((data) => { 
+                if(data){ }
+                else{ alert(data.message) }
+            });
+        }
     }
 
     const LocatePhotos = (photosrc) => {
-        //이미지 주소 복사 할때의 그 주소를 넣으면 되긴함
+        
         return <div>
-            <img src={`/img/select/${photosrc}`} alt="photos" className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
+            <img src={`${photosrc}`} alt="photos" className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
         </div>
     }
 
-    const SaveImage = (event) => {
-        //여기서 받은 사진 주소를 photosSrc에 푸시
-        setIsHousePhoto(true)
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-            const base64 = reader.result;
-            if(base64){
-                setImgBase64(base64.toString())
-            }
-        }
-
-        if(event.target.files[0]) {
-            reader.readAsDataURL(event?.target.files[0])
-            setPhotosSrc( [...photosSrc, event.target.files[0].name ] )
-        }
+    const uploadFB = async (e) =>{
+        console.log(e.target.files[0]);
+        const uploaded_file = await uploadBytes(
+         ref(storage,`photos/${e.target.files[0].name}`
+         ),e.target.files[0]
+        );
+        const file_url = await getDownloadURL(uploaded_file.ref);
+        //console.log(file_url);
+        setPhotosSrc([...photosSrc, file_url])
+        if( photosSrc.length === 0 ){ setNewRecipe({ ...newRecipe, imageUrl: file_url }) }
+        if( photosSrc.length === 1 ){ setNewRecipe({ ...newRecipe, imageUrl2: file_url }) }
+        if( photosSrc.length === 2 ){ setNewRecipe({ ...newRecipe, imageUrl3: file_url }) }
     }
 
     const Input3Component = (props:string) => {
-        
         return <div className="flex flex-col gap-5 ">
             <input 
             type="text"
-            onChange={(e) => {  newRecipe.title=e.currentTarget.value }}
+            onChange={(e) => { setNewRecipe({ ...newRecipe, title: e.currentTarget.value }) }}
             placeholder="제목을 입력하세요"
             className="bg-[#DEF0CA] text-[30px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[80px] focus:outline-none active:translate-y-1"/>
             <input 
             type="text"
-            onChange={(e) => { newRecipe.shortDescription=e.currentTarget.value }}
+            onChange={(e) => { setNewRecipe({ ...newRecipe, shortDescription: e.currentTarget.value }) }}
             placeholder={`${props}에 대해 간단히 설명해주세요!`}
             className="bg-[#F8FBF4] text-[20px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[50px] focus:outline-none active:translate-y-1"/>
             <textarea 
-            onChange={(e) => { newRecipe.content=e.currentTarget.value }}
+            onChange={(e) => { setNewRecipe({ ...newRecipe, content: e.currentTarget.value }) }}
             placeholder={`${props}에 대한 설명을 자세하게 해주세요!`}
             className="bg-[#F8FBF4] text-[20px] text-[#507E1F] p-5 placeholder:text-zinc-300 rounded-[30px] w-full h-[400px] focus:outline-none resize-none active:translate-y-1">
             </textarea>
@@ -256,8 +189,7 @@ export const PostPage:React.FC = () => {
                     onClick={() => { 
                         (flag ? setSource:setFurniture)((flag ? addSourceInput:addFurnitureInput))
                         //무조건 추가해보고 상태 400이면 안하는거로
-                        const url = `http://tobehome.kro.kr:8080/api/categories/${flag ? 'material':'furniture'}`
-                        fetch(url, {
+                        fetch(`http://tobehome.kro.kr:8080/api/categories/${flag ? 'material':'furniture'}`, {
                             method: 'post',
                             headers: {
                                 "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
@@ -267,10 +199,10 @@ export const PostPage:React.FC = () => {
                                 name: (flag ? addSourceInput:addFurnitureInput)
                             })
                         })
-                        .then((res) => { if(res.status === 201){ return res.json() } })
-                        .then((data) => { 
-                            if(flag){ newRecipe.materialCategory = data.id }
-                            else{ newRecipe.furnitureCategory = data.id }
+                            .then((res) => { if(res.status === 201){ return res.json() } })
+                            .then((data) => { 
+                                if(flag){ setNewRecipe({ ...newRecipe, materialCategory: data.id }) }
+                                else{ setNewRecipe({ ...newRecipe, furnitureCategory: data.id })}
                             });
                         }} 
                     className="bg-[#B4CE97] h-[40px] w-[50px] rounded-[30px] text-[15px] text-[#507E1F] p-1">
@@ -282,8 +214,9 @@ export const PostPage:React.FC = () => {
                     {best.map((each) => {
                         return <button 
                         onClick={() => { (flag ? setSource:setFurniture)(each.name); 
-                            if(flag){ newRecipe.materialCategory=each.id }
-                            else{ newRecipe.furnitureCategory=each.id }}} 
+                            if(flag){ setNewRecipe({ ...newRecipe, materialCategory: each.id }) }
+                            else{ setNewRecipe({ ...newRecipe, furnitureCategory: each.id })}
+                        }}
                         className={`${flag ? 'bg-[#DEF0CA]':'bg-[#F8FBF4]'} text-[#507E1F] rounded-[30px] p-2 active:-translate-y-1 whitespace-nowrap`}>
                             { each.name !== '' && each.name }
                         </button>
@@ -294,8 +227,8 @@ export const PostPage:React.FC = () => {
     }
 
     const handlePhotoClick = (event: React.MouseEvent<HTMLImageElement>) => {
-        //클릭 했을 때 마우스 좌표(위치) 파악 
-        //-> 거기에 +버튼 추가 (+버튼에 기능 따로 넣어놓고)
+        //연관게시물 추가 패치 
+
         if( goodsPostId )
         {
             const boundingRect = event.currentTarget.getBoundingClientRect();
@@ -306,17 +239,36 @@ export const PostPage:React.FC = () => {
         }
     }
    
+    const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId }) => {
+        const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
+    
+        return <div>
+            <button 
+            onMouseEnter={() => {  setGoodsBtnClick(true) }}
+            onMouseLeave={() => {  setGoodsBtnClick(false) }}
+            style={{ position: 'absolute', top: y+40 , left: x+40, opacity : 0.7,}} 
+            className={`flex items-center justify-center text-white bg-[#507E1F] rounded-[30px] w-5 h-5 `}>+</button>
+            { goodsBtnClick && 
+            <div 
+            onMouseEnter={() => {  setGoodsBtnClick(true) }}
+            onMouseLeave={() => {  setGoodsBtnClick(false) }}
+            style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
+            className="flex bg-white border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3">
+                <h1>{postId}</h1>
+            </div>}
+        </div>
+    }
+    
+    const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId}) => {
 
-    const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId }) => {
-         
         const handleDeleteGoods = () => {
-            //postId,x,y가 같은 goodsBtn 배열의 원소를 제거 해야함 
-            goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y)
-            //하나라도 다른 것들만 나
+            setGoodsBtn(goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y))
         }
 
         return <div className="flex items-center justify-center w-full gap-3">
-            <button onClick={ handleDeleteGoods } className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-300 ">
+            <button 
+            onClick={ handleDeleteGoods } 
+            className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-300 ">
                 -</button>
             <div className="flex gap-5 pl-5 bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-2">
                 <img src="/img/logo.png" alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
@@ -325,31 +277,28 @@ export const PostPage:React.FC = () => {
         </div>
     }
 
-    const handleGoodsClick = () => {
-        //클릭한 이벤트(게시글)의 postid 받아와야함 
-        setGoodsPostId(`받아온postID ${goodsBtn?.length}`);
+    const handleGoodsClick = (e:PostData) => {
+        //여기서 게시글 정보 찾고 
+        setGoodsPostId(e.id);
         setAddGoodsClick(false)
-        //setGoodsBtn({})
-        //마우스 따라다니고 사진 클릭하면 그위에 플러스 버튼 생김
-        
     }
 
-    return <div className="flex items-center justify-center ">
+    return <div className="flex items-center justify-center">
         <Menu />
 
         {!IsRecipe && !IsHouse &&
         <div className="absolute left-[40%] top-[20%]">
-            <button onClick={() => { setIsRecipe(true); newRecipe.type='product' }} className="absolute text-[20px] sm:text-[50px] bg-[#DEF0CA] rounded-[30px] sm:w-0  hover:text-[52px] hover:w-[210px] transition-all">Recipe POST</button>
-            <button onClick={() => { setIsHouse(true); newRecipe.type='interior' }} className="absolute top-[200px] text-[20px] sm:text-[50px] bg-[#B4CE97] rounded-[30px] sm:w-0 hover:text-[52px] hover:w-[210px] transition-all">House POST</button>
+            <button onClick={() => { setIsRecipe(true); setNewRecipe({ ...newRecipe, type: 'product' }) }} className="absolute text-[20px] sm:text-[50px] bg-[#DEF0CA] rounded-[30px] sm:w-0  hover:text-[52px] hover:w-[210px] transition-all">Recipe POST</button>
+            <button onClick={() => { setIsHouse(true); setNewRecipe({ ...newRecipe, type: 'interior' }) }} className="absolute top-[200px] text-[20px] sm:text-[50px] bg-[#B4CE97] rounded-[30px] sm:w-0 hover:text-[52px] hover:w-[210px] transition-all">House POST</button>
         </div>
         }
 
         { IsRecipe && 
         <div className="absolute top-[93px] w-[50%] lg:w-[40%] bg-white rounded-[50px] p-10">
-            <button 
+            <Link to='/mypage'><button 
             onClick={ handlePost } 
             className="absolute -top-[60px] left-[80%] bg-[#E9F3DE] rounded-[4px] text-[#507E1F] text-[16px] w-[139px] h-[50px] font-semibold shadow-md hover:w-[145px] hover:h-[55px] hover:left-[79%] hover:-top-[62px] active:translate-y-1">
-                POST</button>
+                POST</button></Link>
             <div className="flex flex-row overflow-x-auto gap-5">
                 { photosSrc.map( (each) => LocatePhotos(each) ) }
                 <label
@@ -358,11 +307,11 @@ export const PostPage:React.FC = () => {
                 <input
                 type="file"
                 id="photoInput"
-                onChange={ SaveImage }
+                onChange={ uploadFB }
                 className="hidden"/>
             </div>
-            <h1 className="text-[20px] text-[#507E1F] border-b border-b-[#73974C] pb-5">사용할 사진을 삽입하세요</h1>
-            
+            <h1 className="text-[20px] text-[#507E1F] border-b border-b-[#73974C] pb-5">
+                사용할 사진을 삽입하세요</h1>
             <div className="mt-[30px] border-b border-b-[#73974C] pb-10">
                 { Input3Component('레시피') }
             </div>
@@ -372,13 +321,12 @@ export const PostPage:React.FC = () => {
 
         </div>
         }
-
         { IsHouse &&
         <div className="absolute top-[93px] w-[50%] lg:w-[40%] bg-white rounded-[50px] p-10">
-            <button 
+            <Link to='/mypage'><button 
             onClick={ handlePost } 
             className="absolute -top-[60px] left-[80%] bg-[#E9F3DE] rounded-[4px] text-[#507E1F] text-[16px] w-[139px] h-[50px] font-semibold shadow-md hover:w-[145px] hover:h-[55px] hover:left-[79%] hover:-top-[62px] active:translate-y-1">
-                POST</button>
+                POST</button></Link>
             <div className="w-full flex items-center justify-center">
                 { IsHousePhoto ?
                 <div onMouseMove={(e) => { setXY({x:e.clientX - 550, y:e.clientY -100}) }}>
@@ -388,12 +336,12 @@ export const PostPage:React.FC = () => {
                         </h1>
                     }
                     <img 
-                    src={`/img/select/${photosSrc[0]}`} 
+                    src={`${photosSrc[0]}`} 
                     onClick={ handlePhotoClick }
                     alt="photos" 
                     className="max-w-full max-h-30% rounded-[50px] mb-5"/>
                     <div className="flex flex-col items-center gap-4">
-                        { goodsBtn.map((each, index) => <GoodsLineComponent key={index} x={each.x} y={each.y} postId={each.postId}/>) }
+                        { goodsBtn.map((each, index) => <GoodsLineComponent key={index} x={each.x} y={each.y} postId={each.postId} />) }
                         <div className="flex items-center justify-center gap-3 w-full">
                             <button 
                             onFocus={() => { setAddGoodsClick(true) }} 
@@ -408,19 +356,20 @@ export const PostPage:React.FC = () => {
                         </div>
                         { addGoodsClick && 
                         <div className="-mt-3 grid grid-cols-4 w-full p-4 gap-2 border border-[#507E1F] rounded-[30px] max-h-[270px] overflow-y-auto">
-                            {myRecipes.map((each) => { 
-                                return <div onClick={() => { handleGoodsClick() } } className="flex flex-col gap-1">
+                            {iLikes.map((each) => { 
+                                return <div onClick={() => { handleGoodsClick(each) } } className="flex flex-col gap-1">
                                     <img src="/img/logo.png" alt="post" className="max-w-[100px] bg-zinc-100 rounded-[30px]"/>
                                     <h1 className="text-[10px]">{each.title}</h1>
                                 </div>})
                             }
                         </div>} 
-                        { goodsPostId && <div style={{ position:"absolute", left:xy.x, top:xy.y }}>까만점</div>}
+                        { goodsPostId && <div 
+                            style={{ position:"absolute", left:xy.x - 5 , top:xy.y + 5, opacity: 0.7 }}
+                            className="flex items-center justify-center text-white bg-[#507E1F] rounded-[30px] w-5 h-5">
+                                +</div>}
                     </div>
                     { goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId} />)}
-                    
                 </div>:
-                
                 <div>
                     <label
                     htmlFor="photoInput"
@@ -428,10 +377,11 @@ export const PostPage:React.FC = () => {
                     <input
                     type="file"
                     id="photoInput"
-                    onChange={ SaveImage }
+                    onChange={ uploadFB }
                     className="hidden"/>
                 </div>
                 }
+
             </div>
             <div className="mt-[30px] border-b border-b-[#73974C] pb-10">
                 { Input3Component('집') }
