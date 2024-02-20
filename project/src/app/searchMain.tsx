@@ -1,26 +1,27 @@
-import React, { useState } from "react"
-import { recipes } from '../interface/recipes.tsx';
+import React, { useEffect, useState } from "react"
 import { Menu } from "../interface/menu.tsx";
 import { Link } from "react-router-dom";
+import { ListData } from "../interface/ListData.tsx";
+import { UserData } from "../interface/UserData.tsx";
 
-const RecipeCard = ({ post_id, title, username }) => {
-    /*const [imgUrl, setImgUrl] = useState('');
-    const [title, setTitle] = useState('');
-    const [user, setUser] = useState('');
-*/
-    //fetch로 GET 요청 -> 각각 저장
-
+const RecipeCard = ({ post_id, title, username, imgurl }) => {
+    const [ userInfo, setUserInfo ] = useState<UserData>();
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/${username}`, {
+            method: 'get',
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setUserInfo(data);
+        })
+})
     return (
         <Link to={`/recipe/${post_id}`}>
         <div className="flex flex-col">
-            <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400">
-                {/* 사진 자리 - 나중에 이걸로 교체
-                <img src={imgUrl} alt="Photo" className="w-[245px] h-[245px] rounded-[20px]" />
-                */}
-            </div>
+            <img src={imgurl} alt="Photo" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex justify-between items-end">
                 <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{username}</div>
+                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{userInfo?.nickname}</div>
             </div>
         </div>
         </Link>
@@ -28,43 +29,54 @@ const RecipeCard = ({ post_id, title, username }) => {
 }
 
 export const SearchMainPage:React.FC = ()=>{
-    const [ selectedTags, setSelectedTags ] = useState<number[]>([]);
+    const [ selectedTags, setSelectedTags ] = useState([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
     const [ searchInput, setSearchInput ] = useState<string>('');
     const [ searchResult, setSearchResult ] = useState<string>('');
     const [ isSearchBtnClick, setSearchBtnClick ] = useState(false);
-    const tags = [ //순서는 일단 임의로 정함
-        {
-            category: 1,
-            name: '플라스틱'
-        },
-        {
-            category: 2,
-            name: '비닐'
-        },
-        {
-            category: 3,
-            name: '종이'
-        },
-        {
-            category: 4,
-            name: '유리'
-        },
-        {
-            category: 5,
-            name: '스티로폼'
-        },
-        {
-            category: 6,
-            name: '캔'
-        },
-    ]
 
-    const isInclude = ( tagArr: number[], selectedTagArr: number[] ): boolean => {
-        for(const tag of tagArr){
-            if(selectedTagArr.includes(tag)) {
-                return true;
+    const [ materialList, setMaterialList ] = useState([]);
+    const [ Recipes, setRecipes ] = useState<ListData>();
+    const [ allPostId, setAllPostId ] = useState<number[]>([]);
+
+    useEffect(() => {
+        //재료 카테고리 목록 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/material', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((res) => res.json())
+        .then((data) => { setMaterialList(data); console.log(data) });
+
+        fetch("http://tobehome.kro.kr:8080/api/posts?page=1&size=100", {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
             }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setRecipes(data);
+            console.log(data);
+            data.content.map((each, index) => {
+                if(each.type === "product"){
+                    return (
+                        setAllPostId((prevAllPostId) => [...prevAllPostId, each.id])
+                    )
+                }
+            })
+            
+        })
+    }, [])
+
+
+    const isInclude = ( tag: number, selectedTagArr: number[] ): boolean => {
+        if(selectedTagArr.includes(tag)) {
+            return true;
         }
         return false;
     }
@@ -75,7 +87,7 @@ export const SearchMainPage:React.FC = ()=>{
 
     const findTag = () => {
         setSearchBtnClick(true);
-        const tag = tags.filter(tag => tag.name===searchInput);
+        const tag = materialList.filter(tag => tag.name===searchInput);
         if(tag.length === 0) {
             setSearchResult('재료 목록에 존재하지 않습니다.');
         }else {
@@ -101,7 +113,7 @@ export const SearchMainPage:React.FC = ()=>{
                 <div className="flex flex-row mt-1 gap-1">
                     {selectedTags.length === 0 ? <div className="w-[95px] max-w-[95px] p-2 rounded-[15px] whitespace-nowrap text-[#E9F3DE] text-[16px]">EasterEgg^^</div>
                     : selectedTags.map((each, index) => {
-                        const matchingTag = tags.find(tag => tag.category === each);
+                        const matchingTag = materialList.find(tag => tag.id === each);
                         const tagName = matchingTag? matchingTag.name : '';
 
                         return (
@@ -109,7 +121,7 @@ export const SearchMainPage:React.FC = ()=>{
                                 {tagName}
                                 <button
                                     className="absolute right-1 text-red-200 hover:text-red-300"
-                                    onClick={() => { setSelectedTags((prevSelectedTags) => { return prevSelectedTags.filter(atag => atag !== matchingTag?.category)}) }}
+                                    onClick={() => { setSelectedTags((prevSelectedTags) => { return prevSelectedTags.filter(atag => atag !== matchingTag?.id)}) }}
                                 >X</button>
                             </div>
                         )
@@ -130,17 +142,17 @@ export const SearchMainPage:React.FC = ()=>{
                 </div>
 
                 {!isSearchBtnClick? <div className="mt-4 mb-2 grid grid-cols-3 items-center gap-3">
-                    {tags.map((tag, index) => {
+                    {materialList.map((tag, index) => {
                         return(
                             <div key={index} className="flex text-[#507E1F]">
                                 <button
                                     className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
                                     onClick={() => {
                                         setSelectedTags((prevSelectedTags) => {
-                                            if (prevSelectedTags.includes(tag.category)) {
+                                            if (prevSelectedTags.includes(tag.id)) {
                                                 return prevSelectedTags;
                                             } else {
-                                                return [...prevSelectedTags, tag.category];
+                                                return [...prevSelectedTags, tag.id];
                                             }
                                         });
                                         setIsUpdated(true);
@@ -152,14 +164,12 @@ export const SearchMainPage:React.FC = ()=>{
                         )
                     })}
                 </div> : <div className="mt-4 items-center justify-center text-[#507E1F]">
-                    {/* 입력한 재료와 똑같은 게 존재하면 그 체크박스 띄워주고 없으면 없다고 표시, 처음에 몇개만 보여주고 ...누르면 전체 보기
-                        검색했다가 돌아오면 체크가 해제되네,,,,, 배열 새로 만들어서 저장해야 할 듯*/}
                     {searchResult === '재료 목록에 존재하지 않습니다.'? searchResult :
                     <button
                         className="w-[90px] max-w-[90px] bg-[#a0d4684c] border border-transparent hover:border-[#507E1F] p-2 rounded-[15px] text-[15px]"
                         onClick={() => {
-                            const matchingTag = tags.find(tag => tag.name === searchResult);
-                            const tagCategory = matchingTag?.category;
+                            const matchingTag = materialList.find(tag => tag.name === searchResult);
+                            const tagCategory = matchingTag?.id;
                             setSelectedTags((prevSelectedTags) => {
                                 if (prevSelectedTags.includes(tagCategory!)) {
                                     return prevSelectedTags;
@@ -178,10 +188,10 @@ export const SearchMainPage:React.FC = ()=>{
 
         {/* 레시피들 3열 */}
         {isUpdated? <div className="mt-5 grid grid-cols-3 gap-3">
-            {recipes.map((each, index) => {
-                if(isInclude(each.material_category, selectedTags)){
+            {Recipes?.content.map((each, index) => {
+                if(isInclude(each.materialCategory, selectedTags)){
                     return (
-                        <RecipeCard key={each.post_id} {...each}/>
+                        <RecipeCard key={each.id} post_id={each.id} title={each.title} username={each.userId} imgurl={each.imageUrl}/>
                     )
                 }
             })}
