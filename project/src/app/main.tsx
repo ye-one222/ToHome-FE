@@ -5,6 +5,8 @@ import { ListData } from '../interface/ListData.tsx';
 import { topRecipes } from '../interface/topRecipes.tsx';
 import { Link } from "react-router-dom";
 import { PostData } from "../interface/PostData.tsx";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase.js";
 
 const TopCard = ( {id} ) => {
     //이렇게 받는지, 아이디만 받아서 id.contents 같이 써야하는지 모르겠음
@@ -68,14 +70,26 @@ const TopCard = ( {id} ) => {
 }
 
 const RecipeCard = ({ post_id, title, username }) => {
+    const [ thisRecipe, setThisRecipe ] = useState<PostData>()
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${post_id}`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+            if(data){ setThisRecipe(data) }
+            else{ alert(data.message) }
+        });
+    },[])
+    
     return (
         <Link to={`/recipe/${post_id}`}>
-        <div className="flex flex-col">
-            <div className="w-[230px] h-[230px] bg-[#f1f2f0] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400">
-                {/* 사진 자리 - 나중에 이걸로 교체
-                <img src={imgUrl} alt="Photo" className="w-[245px] h-[245px] rounded-[20px]" />
-                */}
-            </div>
+        <div className="flex flex-col"> 
+            <img src={thisRecipe?.imageUrl} alt="Photo" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex whitespace-nowrap justify-between items-end">
                 <h1 className="w-[132px] text-[20px] text-left text-black overflow-hidden">{title}</h1>
                 <div className="w-[80px] text-[17px] text-right text-[#00000080] overflow-hidden">{username}</div>

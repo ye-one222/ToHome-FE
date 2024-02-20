@@ -1,7 +1,7 @@
-import React, {  } from "react"
+import React, { useEffect, useState } from "react"
 //import { Link } from "react-router-dom"
 import { Menu } from "../interface/menu.tsx";
-import { houses } from '../interface/houses.tsx';
+import { ListData } from '../interface/ListData.tsx';
 import { topHouses } from '../interface/topHouses.tsx';
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
@@ -56,12 +56,6 @@ const TopCard = ({post_id, title, short_description, content, material_category,
 }
 
 const HouseCard = ({ post_id, title, username }) => {
-    /*const [imgUrl, setImgUrl] = useState('');
-    const [title, setTitle] = useState('');
-    const [user, setUser] = useState('');
-*/
-    //fetch로 GET 요청 -> 각각 저장
-
     return (
         <Link to={`/house/${post_id}`}>
         <div className="flex flex-col">
@@ -80,8 +74,21 @@ const HouseCard = ({ post_id, title, username }) => {
 }
 
 export const HouseMainPage:React.FC = ()=>{
-    //const leftBtnUrl = '/img/leftBtn.png';
-    //const rightBtnUrl = '/img/rightBtn.png';
+    const [ housesData, setHousesData ] = useState<ListData>();
+
+    useEffect(() => {
+        fetch("http://tobehome.kro.kr:8080/api/posts?page=1&size=100", {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setHousesData(data);
+        })
+    },[])
 
     var settings = {
         dots: true,
@@ -111,10 +118,22 @@ export const HouseMainPage:React.FC = ()=>{
 
         {/* 집 사진들 3열 */}
         <div className="mt-10 grid grid-cols-3 gap-3">
-            {houses.map((each, index) => {
-                return (
-                    <HouseCard key={index} {...each}/>
-                )
+            {housesData?.content.map((each,index) => {
+                const reversedIndex = housesData.content.length - 1 - index;
+                const currentPost = housesData.content[reversedIndex];
+
+                if(currentPost.type==='interior'){
+                    return (
+                        <HouseCard
+                            key={index}
+                            post_id={currentPost.id}
+                            title={currentPost.title}
+                            username={currentPost.userId}
+                        />
+                    )
+                }else {
+                    return null;
+                }
             })}
         </div>
     </div>
