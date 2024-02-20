@@ -50,7 +50,7 @@ const homeRouter = createBrowserRouter([
         element: <HouseDetailPage />,
     },
     {
-        path:'/guest',
+        path:'/guest/:id',
         element: <GuestProfilePage />,
     },
 ])

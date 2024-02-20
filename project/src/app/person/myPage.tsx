@@ -231,7 +231,7 @@ export const MyPage:React.FC = () => {
 
             <div className="absolute top-[120px] border-t border-t-[#DEF0CA] bg-white rounded-[30px] w-full p-5">
                 { IsMyRecipe ? 
-                    <MyRecipePage />
+                    <MyRecipePage userId={localStorage.getItem("user-id")!}/>
                     :
                     IsScrap ? 
                     < ScrapPage />
