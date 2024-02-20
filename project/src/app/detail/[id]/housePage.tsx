@@ -42,8 +42,93 @@ const CommentComponent = ( { name, comment } ) => {
     )
 }
 
+interface ScrapButtonProps {
+    postid: number;
+}
+
+const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
+    const [iLikes, setILikes] = useState<PostData[]>([]);
+    const [isScrapped, setIsScrapped] = useState(false); // 스크랩 여부 상태 추가
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/likedByUser/${localStorage.getItem("user-id")}`, {
+            method: 'GET',
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    setILikes(data);
+                    setIsScrapped(data.some(n => n.id-postid===0));
+                } else {
+                    /*alert(data.message)*/
+                }
+            });
+    }, [])
+
+    // 스크랩 상태를 변경하는 함수
+    const toggleScrapped = () => {
+        setIsScrapped(prevScrapped => !prevScrapped);
+
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${postid}/likes`, {
+            method: 'POST',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8; int",
+                "user_id":localStorage.getItem("user-id")!,
+            }
+        })
+        .catch(error => {
+            console.error('Failed to like post:', error);
+        });
+    };
+
+    return (
+        <div>
+            {isScrapped? 
+            <button onClick={toggleScrapped}>
+                <img className='w-[50px]' src="/img/heart.png" alt="heart"/>
+            </button> :
+            <button onClick={toggleScrapped}>
+                <img className='w-[50px]' src="/img/emptyHeart.png" alt="heart"/>
+            </button>}
+        </div>
+    );
+};
+
+interface ImagesProps {
+    postid: number;
+}
+
+const Images: React.FC<ImagesProps> = ( { postid } ) => {
+    const [imgCnt,setImgCnt] = useState(0);
+    const [url1,setUrl1] = useState('');
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${postid}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            if(data.imageUrl) { setUrl1(data.imageUrl) }
+        })
+    }, []);
+
+    return (
+        <div className="flex gap-7 text-[50px] text-[#6C9441]">
+            <img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+        </div>
+    )
+}
+
 export const HouseDetailPage:React.FC = () => {
-    const imgUrl = '/img/heart.png';
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<HouseDetailPageParams>();
     const index = houses.findIndex(recipe => recipe.post_id.toString() === id);
@@ -85,18 +170,6 @@ export const HouseDetailPage:React.FC = () => {
     }
 
     useEffect(() => {
-        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
-            method: 'get',
-            headers: {
-                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
-                "Content-Type":"application/json; charset=utf-8"
-            }
-        })
-        .then(res => {return res.json()})
-        .then(data => {
-            setThisHouse(data);
-        })
-
         fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
             method: 'get',
             headers: {
@@ -111,26 +184,31 @@ export const HouseDetailPage:React.FC = () => {
         })
     }, [isUpdated]);
 
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisHouse(data);
+        })
+    }, []);
+
     const findRecipe = ( id: number ) => {
         const recipe = recipes.filter(recipe => recipe.post_id===id);
         setRecipeTitle(recipe[0].title);
     }
-
-    var settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-    };
 
     return (
         <div className="flex flex-col items-center">
             <Menu/>
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10 relative">
-                    <img src={imgUrl} alt="Photo" className="w-[512px] h-[512px] max-w-[512px] max-h-[512px] rounded-[52px]" />
+                    <Images postid={id}/>
                     
                     {/* api 수정 후 손보기 */}
                     {/*houses[index].relatedRecipes.map((each, index) => {
@@ -176,13 +254,7 @@ export const HouseDetailPage:React.FC = () => {
                         <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
                         */}
                     </div>
-                    {IsScrapped? 
-                    <button onClick={() => { setIsScrapped(false) }}>
-                        <img className='w-[50px]' src="/img/heart.png" alt="heart"/>
-                    </button> :
-                    <button onClick={() => { setIsScrapped(true) }}>
-                        <img className='w-[50px]' src="/img/emptyHeart.png" alt="heart"/>
-                    </button>}
+                    <ScrapButton postid={id}/>
                     
                 </div>
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
 import { useParams } from "react-router-dom"
-import Slider from "react-slick";
 import { PostData } from "../../../interface/PostData.tsx";
 import { CommentData } from "../../../interface/CommentData.tsx";
 
@@ -37,61 +36,6 @@ const CommentComponent = ( { name, comment } ) => {
             <div className="w-2/3 bg-[#A6CE79] text-white text-[16px] rounded-[30px] shadow-md p-5">
                 {comment}
             </div>
-        </div>
-    )
-}
-
-const Image1 = ( url: string ) => {
-    return (
-        <div>
-            <img src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-        </div>
-    )
-}
-
-const Image2 = ( url1: string, url2: string ) => {
-    const urls = [ url1, url2 ];
-    var index = 0;
-
-    const toPrevImg = () => {
-        if(index===0) { }
-        else if(index===1) { index=0; }
-    }
-
-    const toNextImg = () => {
-        if(index===0) { index=1; }
-        else if(index===1) { }
-    }
-
-    return (
-        <div>
-            <button onClick={toPrevImg}>left</button>
-                <img src={urls[index]} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-            <button onClick={toNextImg}>right</button>
-        </div>
-    )
-}
-
-const Image3 = ( url1: string, url2: string, url3: string ) => {
-    const [ thisUrl, setThisUrl ] = useState<string>('');
-
-    const toPrevImg = () => {
-        if(thisUrl===url1) { }
-        else if(thisUrl===url2) { setThisUrl(url1); }
-        else if(thisUrl===url3) { setThisUrl(url2); }
-    }
-
-    const toNextImg = () => {
-        if(thisUrl===url1) { setThisUrl(url2); }
-        else if(thisUrl===url2) { setThisUrl(url3); }
-        else if(thisUrl===url3) { }
-    }
-
-    return (
-        <div>
-            <button onClick={toPrevImg}>left</button>
-                <img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-            <button onClick={toNextImg}>right</button>
         </div>
     )
 }
@@ -203,7 +147,6 @@ const Images: React.FC<ImagesProps> = ( { postid } ) => {
     )
 }
 
-
 export const RecipeDetailPage:React.FC = () => {
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
@@ -269,15 +212,6 @@ export const RecipeDetailPage:React.FC = () => {
             setThisRecipe(data);
         })
     }, []);
-
-    var settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-    };
     
     return (
         <div className="flex flex-col items-center">
