@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
-import { houses } from '../../../interface/houses.tsx';
-import { recipes } from '../../../interface/recipes.tsx';
 import { Link, useParams } from "react-router-dom"
 import { PostData } from "../../../interface/PostData.tsx";
 import { CommentData } from "../../../interface/CommentData.tsx";
@@ -128,18 +126,49 @@ const Images: React.FC<ImagesProps> = ( { postid } ) => {
     )
 }
 
+interface TitleProps {
+    pid: number;
+}
+
+const Title: React.FC<TitleProps> = ( { pid } ) => {
+    const [ thisTitle, setThisTitle ] = useState('');
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${pid}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisTitle(data.title);
+            console.log(data.title)
+        })
+    }, [])
+
+    return (
+        <div>{thisTitle}</div>
+    )
+}
+
+interface RelRecipe {
+    p: any;
+    x: any;
+    y: any;
+}
+
 export const HouseDetailPage:React.FC = () => {
-    const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<HouseDetailPageParams>();
-    const index = houses.findIndex(recipe => recipe.post_id.toString() === id);
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
     const [ isGoodsClick, setGoodsClick ] = useState(false);
     const [ goodsIndex, setGoodsIndex ] = useState<number>();
-    const [ recipeTitle, setRecipeTitle ] = useState<string>('');
     const [ thisHouse, setThisHouse ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
+    const [ relRecipes, setRelRecipes ] = useState<RelRecipe[]>([]);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -195,13 +224,9 @@ export const HouseDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisHouse(data);
+            setRelRecipes(data.rel);
         })
     }, []);
-
-    const findRecipe = ( id: number ) => {
-        const recipe = recipes.filter(recipe => recipe.post_id===id);
-        setRecipeTitle(recipe[0].title);
-    }
 
     return (
         <div className="flex flex-col items-center">
@@ -209,18 +234,16 @@ export const HouseDetailPage:React.FC = () => {
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10 relative">
                     <Images postid={id}/>
-                    
-                    {/* api 수정 후 손보기 */}
-                    {/*houses[index].relatedRecipes.map((each, index) => {
+
+                    {relRecipes.map((each, index) => {
                         return (
-                            <div className="absolute" style={{top: `${each.location.y}px`, left: `${each.location.x}px`}}>
+                            <div className="absolute" style={{top: `${each.y}px`, left: `${each.x}px`}}>
                                 <button
                                     key={index}
                                     className="bg-[#85A563] rounded-[30px] text-white text-[18px] w-[24px] h-[24px]"
                                     onMouseEnter={() => {
                                         setGoodsClick(true);
                                         setGoodsIndex(index);
-                                        findRecipe(each.post_id);
                                     }}
                                     onMouseLeave={() => {
                                         setGoodsClick(false);
@@ -228,20 +251,19 @@ export const HouseDetailPage:React.FC = () => {
                                 >+
                                 </button>
                                 {isGoodsClick && index===goodsIndex &&
-                                <Link to={`/recipe/${each.post_id}`}>
+                                <Link to={`/recipe/${each.p}`}>
                                     <div 
                                         className="flex bg-white rounded-[30px] text-[#507E1F] p-3"
                                         style={{opacity : 0.8}}
                                         onMouseEnter={() => { setGoodsClick(true) }}
                                         onMouseLeave={() => { setGoodsClick(false) }}
                                         >
-                                        { 이미지도 넣을까? }
-                                        {recipeTitle}
+                                        <Title pid={each.p}/>
                                     </div>
                                 </Link>}
                             </div>
                         )
-                    })*/}
+                    })}
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
