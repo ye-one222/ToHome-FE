@@ -49,5 +49,6 @@
     "postcss-loader": "^8.0.0",
     "style-loader": "^3.3.4",
     "tailwindcss": "^3.4.1"
-  }
+  },
+  "homepage": "http://To-Home.com/"
 }
