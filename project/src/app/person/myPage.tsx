@@ -62,14 +62,31 @@ const ScrapPage:React.FC = () => {
 }
 
 const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, email,imgUrl}) => {
-    //let userName:string = name
+    
     const [ newId, setNewId ] = useState<string>(name)
     const [ newImg, setNewImg ] = useState<string>(imgUrl)
-    const [ isIdChanged, setIsIdChanged ] = useState(false)
+    const [ isChanged, setIsChanged ] = useState(false)
 
     const handleSave = () => {
         if(newId === ''){
             alert("아이디를 입력해주세요!")
+        }else if(newId === name){   //이미지 수정
+            fetch(`http://tobehome.kro.kr:8080/${localStorage.getItem("user-id")}/image`, {
+            method: 'PATCH',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+            body: JSON.stringify({
+                newImageUrl: newImg
+            })
+            })
+            .then((res) => { 
+                alert("이미지 수정 완료! 새로고침 해주세요:) ")
+                setIsChanged(false)
+                return res.json()
+            })
+            .then((data) => { console.log(data.message) });
         }else{
             fetch(`http://tobehome.kro.kr:8080/${localStorage.getItem("user-id")}/nickname`, {
             method: 'PATCH',
@@ -78,15 +95,15 @@ const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, 
                 "Content-Type":"application/json; charset=utf-8",
             },
             body: JSON.stringify({
-                newNickname: newId
-                //newImgUrl: newImg
+                newNickname: newId,
+                newImageUrl: newImg
             })
             })
             .then((res) => { 
                 console.log(res)
                 if(res.status === 200) { 
-                    alert("수정 완료! 새로고침 해주세요:) ")
-                    setIsIdChanged(false)
+                    alert("아이디 수정 완료! 새로고침 해주세요:) ")
+                    setIsChanged(false)
                     //userName=newId
                 }else{
                     alert("아이디가 중복됩니다. 다른 아이디로 시도하세요 :)")
@@ -99,18 +116,19 @@ const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, 
     }
 
     const handleCancelBtn = () => {
-        setIsIdChanged(false)
+        setIsChanged(false)
         setNewId(name);
         setNewImg(imgUrl);
     }
     
     const uploadFB = async (e) =>{
         const uploaded_file = await uploadBytes(
-         ref(storage,`photos/${e.target.files[0].name}`
+         ref(storage,`profile/${e.target.files[0].name}`
          ),e.target.files[0]
         );
         const file_url = await getDownloadURL(uploaded_file.ref);
         setNewImg(file_url)
+        setIsChanged(true)
     }
 
     return <div className="flex flex-col gap-5 max-h-[500px]">
@@ -137,7 +155,7 @@ const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, 
         <input 
         type="text" 
         placeholder={newId}
-        onChange={(e) => { setIsIdChanged(true); setNewId(e.target.value) }}
+        onChange={(e) => { setIsChanged(true); setNewId(e.target.value) }}
         className="MyPageEditInput"/>
     </div>
     <div className="flex gap-3">
@@ -151,8 +169,8 @@ const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, 
         className="w-1/3 h-[45px] bg-red-100 text-red-400 rounded-2xl border border-red-100 hover:border-red-400 transition-all">취소</button>
         <button 
         onClick={ handleSave } 
-        disabled={ newId === name }  
-        className={`w-1/3 h-[45px] rounded-2xl border transition-all ${isIdChanged ? 'bg-green-100 text-green-400 border-green-100 hover:border-green-400':'bg-zinc-100 text-zinc-400 border-zinc-100 hover:border-zinc-400'}`}>저장</button>
+        disabled={ newId === name && newImg === imgUrl }  
+        className={`w-1/3 h-[45px] rounded-2xl border transition-all ${isChanged ? 'bg-green-100 text-green-400 border-green-100 hover:border-green-400':'bg-zinc-100 text-zinc-400 border-zinc-100 hover:border-zinc-400'}`}>저장</button>
     </div>
 </div>
 }
@@ -160,7 +178,7 @@ const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, 
 export const MyPage:React.FC = () => {
     const [ userId, setUserId ] = useState<string>('')
     const [ email, setEmail ] = useState<string>('')
-    const [ imgUrl, setImgUrl ] = useState<string>('/img/logo.png')
+    const [ imgUrl, setImgUrl ] = useState<string>('')
 
     const [ IsMyRecipe, setIsMyRecipe ] = useState(true)
     const [ IsScrap, setIsScrap ] = useState(false)
@@ -179,7 +197,7 @@ export const MyPage:React.FC = () => {
             if(data){ 
                 setUserId(data.nickname)
                 setEmail(data.email)
-                //setImgUrl(data.imageUrl)
+                setImgUrl(data.imageUrl)
             }
             else{ alert(data.message) }
         });
@@ -190,7 +208,7 @@ export const MyPage:React.FC = () => {
         <Menu />
 
         <div className="absolute top-[40px] h-[110px] flex gap-3 w-1/4 min-w-[400px] max-w-[604px] p-3 bg-[#F2F8E9] border border-white rounded-xl">
-            <img className='bg-white rounded-[20px] w-[80px] h-[80px]' alt="myPage" src={`${imgUrl ? imgUrl:'/img/guest.png'}`}/>
+            <img className='bg-white rounded-[20px] w-[80px] h-[80px]' alt="myPage" src={`${imgUrl ? imgUrl:'/img/logo.png'}`}/>
             <div className="flex flex-col mt-auto">
                 <h1 className="text-[#507e1f] text-[30px] font-semibold">{userId}</h1>
                 <h1 className="text-[#B1C799] text-[15px] font-semibold">{email}</h1>
