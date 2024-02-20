@@ -5,8 +5,6 @@ import { ListData } from '../interface/ListData.tsx';
 import { topRecipes } from '../interface/topRecipes.tsx';
 import { Link } from "react-router-dom";
 import { PostData } from "../interface/PostData.tsx";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase.js";
 
 const TopCard = ( {id} ) => {
     //이렇게 받는지, 아이디만 받아서 id.contents 같이 써야하는지 모르겠음
@@ -81,7 +79,7 @@ const RecipeCard = ({ post_id, title, username }) => {
         })
         .then((response) => response.json())
         .then((data) => { 
-            if(data){ setThisRecipe(data) }
+            if(data){ setThisRecipe(data); }
             else{ alert(data.message) }
         });
     },[])
