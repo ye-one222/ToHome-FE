@@ -41,33 +41,123 @@ const CommentComponent = ( { name, comment } ) => {
     )
 }
 
-const Images = ( arr:string[] ) => {
-    const length = arr.length;
-    const refinedImgUrls = arr.slice(0,length);
-
-    var settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-    };
-
+const Image1 = ( url: string ) => {
     return (
-        <Slider {...settings} className="DetailSliderCSS">
-            {refinedImgUrls.map((url, index) => {
-                return (
-                    <img key={index} src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-                )
-            })}
-        </Slider>
+        <div>
+            <img src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+        </div>
     )
 }
 
+const Image2 = ( url1: string, url2: string ) => {
+    const urls = [ url1, url2 ];
+    var index = 0;
+
+    const toPrevImg = () => {
+        if(index===0) { }
+        else if(index===1) { index=0; }
+    }
+
+    const toNextImg = () => {
+        if(index===0) { index=1; }
+        else if(index===1) { }
+    }
+
+    return (
+        <div>
+            <button onClick={toPrevImg}>left</button>
+                <img src={urls[index]} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+            <button onClick={toNextImg}>right</button>
+        </div>
+    )
+}
+
+const Image3 = ( url1: string, url2: string, url3: string ) => {
+    const [ thisUrl, setThisUrl ] = useState<string>('');
+
+    const toPrevImg = () => {
+        if(thisUrl===url1) { }
+        else if(thisUrl===url2) { setThisUrl(url1); }
+        else if(thisUrl===url3) { setThisUrl(url2); }
+    }
+
+    const toNextImg = () => {
+        if(thisUrl===url1) { setThisUrl(url2); }
+        else if(thisUrl===url2) { setThisUrl(url3); }
+        else if(thisUrl===url3) { }
+    }
+
+    return (
+        <div>
+            <button onClick={toPrevImg}>left</button>
+                <img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+            <button onClick={toNextImg}>right</button>
+        </div>
+    )
+}
+
+interface ScrapButtonProps {
+    postid: number;
+}
+
+const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
+    const [iLikes, setILikes] = useState<PostData[]>([]);
+    const [isScrapped, setIsScrapped] = useState(false); // 스크랩 여부 상태 추가
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/likedByUser/${localStorage.getItem("user-id")}`, {
+            method: 'GET',
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type": "application/json; charset=utf-8",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data) {
+                    setILikes(data);
+                    setIsScrapped(data.some(n => n.id-postid===0));
+                } else {
+                    /*alert(data.message)*/
+                }
+            });
+    }, [])
+
+
+    // 스크랩 상태를 변경하는 함수
+    const toggleScrapped = () => {
+        setIsScrapped(prevScrapped => !prevScrapped);
+
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${postid}/likes`, {
+            method: 'POST',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8; int",
+                "user_id":localStorage.getItem("user-id")!,
+            }
+        })
+        .catch(error => {
+            console.error('Failed to like post:', error);
+        });
+    };
+
+    return (
+        <div>
+            {isScrapped? 
+            <button onClick={toggleScrapped}>
+                <img className='w-[50px]' src="/img/heart.png" alt="heart"/>
+            </button> :
+            <button onClick={toggleScrapped}>
+                <img className='w-[50px]' src="/img/emptyHeart.png" alt="heart"/>
+            </button>}
+        </div>
+    );
+};
+
+
 export const RecipeDetailPage:React.FC = () => {
     const [ imgUrls, setImgUrls ] = useState<string[]>([]);
-    const [ imgCnt, setImgCnt ] = useState<number>(0);
+    var imgCnt;
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
@@ -75,7 +165,9 @@ export const RecipeDetailPage:React.FC = () => {
     const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
-    const [ isDone, setIsDone ] = useState(false)
+    const [ isOne, setIsOne ] = useState(false);
+    const [ isTwo, setIsTwo ] = useState(false);
+    const [ isThree, setIsThree ] = useState(false);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -117,19 +209,9 @@ export const RecipeDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisRecipe(data);
-            if (data.imageUrl && !imgUrls.includes(data.imageUrl)) {
-                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl]);
-                setImgCnt(1);
-            }
-            if (data.imageUrl2 && !imgUrls.includes(data.imageUrl2)) {
-                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl2]);
-                setImgCnt(2);
-            }
-            if (data.imageUrl3 && !imgUrls.includes(data.imageUrl3)) {
-                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl3]);
-                setImgCnt(3);
-            }            
-            console.log("imgurl:",imgUrls);
+            if(data.imageUrl) { imgCnt=1; setIsOne(true); setIsTwo(false); setIsThree(false); }
+            if(data.imageUrl2) { imgCnt=2; setIsOne(false); setIsTwo(true); setIsThree(false); }
+            if(data.imageUrl3) { imgCnt=3; setIsOne(false); setIsTwo(false); setIsThree(true); }
         })
     }, []);
 
@@ -148,12 +230,6 @@ export const RecipeDetailPage:React.FC = () => {
         })
     }, [isUpdated]);
 
-    useEffect(() => {
-        if (imgUrls.length === imgCnt*2) { //아니 왜 2번씩 저장되는지 이유를 모르겠네
-            setIsDone(true);
-        }
-    }, [imgUrls]);
-
     var settings = {
         dots: true,
         infinite: true,
@@ -170,7 +246,9 @@ export const RecipeDetailPage:React.FC = () => {
             {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                {Images (imgUrls)}
+                    {isOne && Image1(thisRecipe?.imageUrl!)}
+                    {isTwo && Image2(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!)}
+                    {isThree && Image3(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!, thisRecipe?.imageUrl3!)}
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
@@ -183,13 +261,7 @@ export const RecipeDetailPage:React.FC = () => {
                         <img src={thisRecipe.} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
                         */}
                     </div>
-                    {IsScrapped? 
-                    <button onClick={() => { setIsScrapped(false) }}>
-                        <img className='w-[50px]' src="/img/heart.png" alt="heart"/>
-                    </button> :
-                    <button onClick={() => { setIsScrapped(true) }}>
-                        <img className='w-[50px]' src="/img/emptyHeart.png" alt="heart"/>
-                    </button>}
+                    <ScrapButton postid={id}/>
                     
                 </div>
 
