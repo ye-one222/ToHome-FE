@@ -10,13 +10,42 @@ type HouseDetailPageParams = {
 }
 
 const UsedCategory = (type: string, category: number|undefined) => {
+    const [ allSource, setAllSource ] = useState<{id:Number, name:string}[]>([])
+    const [ allFurniture, setAllFurniture ] = useState<{id:Number, name:string}[]>([])
+
+    useEffect(() => {
+        //재료 카테고리 목록 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/material', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { setAllSource(data) });
+        //가구 카테고리 목록 전체 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { setAllFurniture(data) });
+    })
+
+    const mySource = allSource.find((each) => each.id === category)
+    const myFurniture = allFurniture.find((each) => each.id === category)
+
     return (
         <div className={`mt-10 ${type==="가구 종류"? 'bg-[#DEF0CA]' : 'bg-[#F8FBF4]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
             <h1 className="text-[30px] text-[#507E1F]">{type}</h1>
             <div className="flex overflow-x-auto min-h-[40px]">
                 {type==="가구 종류"? 
-                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
-                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{myFurniture?.name}</div>
+                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{mySource?.name}</div>
                 }
             </div>
         </div>

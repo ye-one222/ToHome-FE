@@ -2,21 +2,26 @@ import React, { useEffect, useState } from "react"
 import { Menu } from "../interface/menu.tsx";
 import { Link } from "react-router-dom";
 import { ListData } from "../interface/ListData.tsx";
+import { UserData } from "../interface/UserData.tsx";
 
 const RecipeCard = ({ post_id, title, username, imgurl }) => {
-    /*const [imgUrl, setImgUrl] = useState('');
-    const [title, setTitle] = useState('');
-    const [user, setUser] = useState('');
-*/
-    //fetch로 GET 요청 -> 각각 저장
-
+    const [ userInfo, setUserInfo ] = useState<UserData>();
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/${username}`, {
+            method: 'get',
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setUserInfo(data);
+        })
+})
     return (
         <Link to={`/recipe/${post_id}`}>
         <div className="flex flex-col">
             <img src={imgurl} alt="Photo" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex justify-between items-end">
                 <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{username}</div>
+                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{userInfo?.nickname}</div>
             </div>
         </div>
         </Link>
