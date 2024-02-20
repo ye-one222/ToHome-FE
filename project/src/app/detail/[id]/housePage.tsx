@@ -3,6 +3,7 @@ import { Menu } from "../../../interface/menu.tsx"
 import { Link, useParams } from "react-router-dom"
 import { PostData } from "../../../interface/PostData.tsx";
 import { CommentData } from "../../../interface/CommentData.tsx";
+import { UserData } from "../../../interface/UserData.tsx";
 
 type HouseDetailPageParams = {
     id: string
