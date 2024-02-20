@@ -1,7 +1,7 @@
 .MainCSS {
   background-color: #F8FBF4; 
   display: flex;  
-  min-height: 180vh;
+  min-height: 100vh;
   flex-direction: column;
   font-family: 'Montserrat';
   /*height: 100vh;*/
@@ -43,24 +43,6 @@
   padding: 3px;
   padding-left: 15px;
   outline: none;
-}
-
-.CheckSameBefore{
-  background-color: white;
-  border-width: 1px;
-  border-color: #DCECCB;
-  border-radius: 20px;
-  color: #507e1f;
-  padding: 3px;
-  font-size: small;
-}
-
-.CheckSameAfter{
-  background-color: rgb(244 244 245 / var(--tw-bg-opacity));;
-  border-radius: 20px;
-  color: rgb(161 161 170 / var(--tw-bg-opacity));
-  padding: 3px;
-  font-size: small;
 }
 
 .Try{

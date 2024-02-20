@@ -26,7 +26,8 @@ export const PostPage:React.FC = () => {
         imageUrl2: '',
         imageUrl3: '',
         createdAt: '', //아니면 Date?
-        updatedAt: ''
+        updatedAt: '',
+        rel:[]
     });
     const [ iLikes, setILikes ] = useState<PostData[]>([])
     
@@ -85,9 +86,11 @@ export const PostPage:React.FC = () => {
     
     //post 
     const handlePost = () => {
-        if( photosSrc.length === 0){ alert("사진을 골라주세요!") }
+        if( photosSrc.length === 0 || newRecipe.title === '' 
+            || newRecipe.shortDescription === '' || newRecipe.content === ''){ 
+                alert(" 게시글 작성을 마무리해주세요 ") }
         else{
-            //서버에게 보내기.. 전에 공란있는지 확인하면 좋을듯!!!!!!!!!!
+            console.log(newRecipe)
             fetch('http://tobehome.kro.kr:8080/api/posts', {
                 method: 'post',
                 headers: {
@@ -105,6 +108,7 @@ export const PostPage:React.FC = () => {
                     imageUrl: newRecipe.imageUrl,
                     imageUrl2: newRecipe.imageUrl2,
                     imageUrl3: newRecipe.imageUrl3,
+                    rel: newRecipe.rel,
                 })
             })
             .then((response) => { return response.json() })
@@ -116,20 +120,18 @@ export const PostPage:React.FC = () => {
     }
 
     const LocatePhotos = (photosrc) => {
-        
         return <div>
-            <img src={`${photosrc}`} alt="photos" className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
+            <img src={photosrc} alt="photos" className="flex items-center justify-center min-w-[128px] h-[128px] text-[30px] bg-[#F1F2F0] rounded-[50px]"/>
         </div>
     }
 
     const uploadFB = async (e) =>{
-        console.log(e.target.files[0]);
+        setIsHousePhoto(true)
         const uploaded_file = await uploadBytes(
          ref(storage,`photos/${e.target.files[0].name}`
          ),e.target.files[0]
         );
         const file_url = await getDownloadURL(uploaded_file.ref);
-        //console.log(file_url);
         setPhotosSrc([...photosSrc, file_url])
         if( photosSrc.length === 0 ){ setNewRecipe({ ...newRecipe, imageUrl: file_url }) }
         if( photosSrc.length === 1 ){ setNewRecipe({ ...newRecipe, imageUrl2: file_url }) }
@@ -176,7 +178,7 @@ export const PostPage:React.FC = () => {
                         </div> }
                     </div>
                 </div>
-                <div className={`${props === '주사용재료' ? 'bg-[#F8FBF4]':'bg-[#DEF0CA]'} rounded-[30px] p-10`}>
+                <div className={`${flag ? 'bg-[#F8FBF4]':'bg-[#DEF0CA]'} rounded-[30px] p-10`}>
 
                     <input
                     type="text"
@@ -227,15 +229,15 @@ export const PostPage:React.FC = () => {
     }
 
     const handlePhotoClick = (event: React.MouseEvent<HTMLImageElement>) => {
-        //연관게시물 추가 패치 
-
         if( goodsPostId )
         {
             const boundingRect = event.currentTarget.getBoundingClientRect();
-            console.log(event.clientX, event.clientY)
+            //console.log(event.clientX, event.clientY)
             const newBtn:goodsBtnType = { x:event.clientX - boundingRect.left, y:event.clientY - boundingRect.top, postId:goodsPostId }
             setGoodsBtn([...goodsBtn, newBtn])
             setGoodsPostId(null)
+            //goodsBtn을 newRecipe.rel에 추가
+            setNewRecipe({...newRecipe, rel:[...newRecipe.rel, {p:newBtn.postId, x:newBtn.x, y: newBtn.y}]} )
         }
     }
    
@@ -263,12 +265,14 @@ export const PostPage:React.FC = () => {
 
         const handleDeleteGoods = () => {
             setGoodsBtn(goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y))
+            //newRecipe에서도 빼야 함 
+            setNewRecipe({...newRecipe, rel:newRecipe.rel.filter(item => item.p !== postId)})
         }
 
         return <div className="flex items-center justify-center w-full gap-3">
             <button 
             onClick={ handleDeleteGoods } 
-            className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-300 ">
+            className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-200 transition-all">
                 -</button>
             <div className="flex gap-5 pl-5 bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-2">
                 <img src="/img/logo.png" alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
@@ -283,7 +287,7 @@ export const PostPage:React.FC = () => {
         setAddGoodsClick(false)
     }
 
-    return <div className="flex items-center justify-center">
+    return <div className="flex items-center justify-center min-h-[200vh] bg-[#F8FBF4]">
         <Menu />
 
         {!IsRecipe && !IsHouse &&
@@ -311,7 +315,7 @@ export const PostPage:React.FC = () => {
                 className="hidden"/>
             </div>
             <h1 className="text-[20px] text-[#507E1F] border-b border-b-[#73974C] pb-5">
-                사용할 사진을 삽입하세요</h1>
+                사용할 사진을 최대 3개 삽입하세요</h1>
             <div className="mt-[30px] border-b border-b-[#73974C] pb-10">
                 { Input3Component('레시피') }
             </div>
@@ -336,7 +340,7 @@ export const PostPage:React.FC = () => {
                         </h1>
                     }
                     <img 
-                    src={`${photosSrc[0]}`} 
+                    src={ photosSrc[0] } 
                     onClick={ handlePhotoClick }
                     alt="photos" 
                     className="max-w-full max-h-30% rounded-[50px] mb-5"/>
@@ -370,7 +374,7 @@ export const PostPage:React.FC = () => {
                     </div>
                     { goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId} />)}
                 </div>:
-                <div>
+                <div >
                     <label
                     htmlFor="photoInput"
                     className="text-[20px] py-5 px-20 bg-[#F1F2F0] rounded-[50px] hover:bg-[#DBDCDB] transition-all">인테리어 사진 선택</label>
