@@ -11,5 +11,6 @@ export interface PostData {
     imageUrl2: string,
     imageUrl3: string,
     createdAt: string, //아니면 Date?
-    updatedAt: string
+    updatedAt: string,
+    rel: {p:number, x:number, y:number}[],//연관 게시물의 배열
 }

@@ -37,8 +37,8 @@ export const MyRecipePage:React.FC = ( ) => {
 
     return <div>
     
-    <h1 className="text-[#507e1f] text-[30px] font-semibold">My Recipes - {myRecipes.length}</h1>
-    <div className="grid grid-cols-3 gap-4 max-h-[500px] overflow-y-auto overflow-x-hidden">
+    <h1 className="text-[#507e1f] text-[30px] ">Recipes: {myRecipes.length}</h1>
+    <div className="grid grid-cols-3 gap-3 max-h-[500px] overflow-y-auto overflow-x-hidden">
     
     {myRecipes.map((each) => {
         let likeCount = 0;
@@ -57,18 +57,18 @@ export const MyRecipePage:React.FC = ( ) => {
         });
         console.log(each)
         return (
-        <div className="">
+        <div className="flex items-center justify-center bg-white rounded-[20px] h-[250px]">
             <Link to={`/recipe/${each.id}`}> 
-            <div className="flex items-center justify-center bg-zinc-100 rounded-[20px] h-[250px]">
+            <div>
                 <img className='rounded-[20px]' src={each.imageUrl} alt={each.title}/></div>
             <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
-                <h1 className="overflow-hidden">{each.title}</h1>
+                <h1 className="text-[#507e1f] max-w-[180px] overflow-hidden">{each.title}</h1>
                 <div className="flex flex-row ml-auto mr-1">
                     { (iLikes.indexOf(each.id) !== -1) ? 
                         <img className='w-[23px]' src="/img/heart.png" alt="heart"/>:
                         <img className='w-[23px]' src="/img/emptyHeart.png" alt="emptyHeart"/>
                     }
-                    <h1>{likeCount}</h1>
+                    <h1 className="text-[#507e1f] text-[15px]">{likeCount}</h1>
                 </div>
             </div>
             </Link>

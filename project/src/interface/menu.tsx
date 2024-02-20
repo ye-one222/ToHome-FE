@@ -5,8 +5,9 @@ import { Link, NavLink } from "react-router-dom";
 export const Menu = (): JSX.Element => {
     const logoUrl = '/img/logo.png';
     const postImgUrl = '/img/pencil.png'
+    const [ userId, setUserId ] = useState<string>('')
     const [ IsLogin, setIsLogin ] = useState(false)
-    //const [whatActiveBtn, setWhatActiveBtn] = useState('')
+    
     const menus = [
         { name: "Main", path: "/" },
         { name: "House", path: "/house" },
@@ -17,20 +18,16 @@ export const Menu = (): JSX.Element => {
         if(localStorage.getItem("login-token")){
         //로그인 된 상태라면 
         setIsLogin(true)
-        /*
-        fetch(`http://tobehome.kro.kr:8080/users/${localStorage.getItem("user-nickname")}`, {
+        fetch(`http://tobehome.kro.kr:8080/${localStorage.getItem("user-id")}`, {
             method: 'GET',
             headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
                 "Content-Type":"application/json; charset=utf-8",
-                Authorization: localStorage.getItem("login-token") as string,
             },
         })
         .then((response) => response.json())
-        .then((data) => console.log(data));
-        */
-    }}
-    ,[])
-    
+        .then((data) => { setUserId(data.nickname) });
+    }},[]);
     
     return (
         <div className="MenuCSS flex flex-col items-center absolute right-3/4 top-5 md:w-[210px] h-[600px] bg-[#a0d4684c] rounded-[78px]">
@@ -81,7 +78,7 @@ export const Menu = (): JSX.Element => {
                     </button></Link>
                 </div>:
                 <div>
-                    <h1 className="flex items-center justify-center text-[14px] mb-5">{localStorage.getItem("user-nickname")}님 환영합니다!</h1>
+                    <h1 className="flex items-center justify-center text-[14px] mb-5">{userId}님 환영합니다!</h1>
                     <Link to={'/'}><button onClick={() => { setIsLogin(false); localStorage.removeItem("login-token"); }} className="flex justify-center w-[172px] py-[12px] bg-[#B4CE97] text-[white] rounded-[8px] hover:text-[#507e1f] transition-all">
                             Logout
                     </button></Link>

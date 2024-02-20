@@ -25,8 +25,8 @@ const ScrapPage:React.FC = () => {
 },[]);
 
     return <div>
-    <h1 className="text-[#507e1f] text-[30px] font-semibold">Scrap - {iLikes.length}</h1>
-    <div className="grid grid-cols-3 gap-4 max-h-[500px] overflow-y-auto overflow-x-hidden">
+    <h1 className="text-[#507e1f] text-[30px]">Scrap: {iLikes.length}</h1>
+    <div className="grid grid-cols-3 gap-3 max-h-[500px] overflow-y-auto overflow-x-hidden">
     {iLikes.map((each) => {
         let likeCount = 0;
          //게시글 좋아요 수 조회
@@ -46,12 +46,12 @@ const ScrapPage:React.FC = () => {
         return (
         <div>
             <Link to={`/recipe/${each.id}`}> 
-            <img className='w-[260px] bg-zinc-100 rounded-[20px]' src="{each.imageUrl}" alt={each.title}/>
+            <img className='w-[260px] bg-zinc-100 rounded-[20px]' src={each.imageUrl} alt={each.title}/>
             <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
-                <h1 className="overflow-hidden">{each.title}</h1>
+                <h1 className="text-[#507e1f] max-w-[180px] overflow-hidden">{each.title}</h1>
                 <div className="flex flex-row ml-auto">
-                <img className='w-[24px]' src="/img/heart.png" alt="heart"/>
-                <h1>{likeCount}</h1>
+                <img className='w-[23px]' src="/img/heart.png" alt="heart"/>
+                <h1 className="text-[#507e1f] text-[15px]">{likeCount}</h1>
                 </div>
             </div>
             </Link>
@@ -61,95 +61,62 @@ const ScrapPage:React.FC = () => {
 </div>
 }
 
-const MyPageEDIT:React.FC = () => {
-    const [ userId, setUserId ] = useState<string>('')
-    const [ email, setEmail ] = useState<string>('')
+const MyPageEDIT:React.FC<{name:string, email:string, imgUrl:string}> = ({name, email,imgUrl}) => {
+    //let userName:string = name
+    const [ newId, setNewId ] = useState<string>(name)
+    const [ newImg, setNewImg ] = useState<string>(imgUrl)
+    const [ isIdChanged, setIsIdChanged ] = useState(false)
 
-    const [ imgFile, setImgFile ] = useState('')
-    const [ imgBase64, setImgBase64 ]= useState('')
-    const [ IsIdChecked, setIsIdChecked ] = useState(true)
-    const [ IsEmailChecked, setIsEmailChecked ] = useState(true)
-
-    useEffect(() => {
-        /*fetch(`http://tobehome.kro.kr:8080/아이디로 개인정보 불러오기!`, {
-            method: 'GET',
+    const handleSave = () => {
+        if(newId === ''){
+            alert("아이디를 입력해주세요!")
+        }else{
+            fetch(`http://tobehome.kro.kr:8080/${localStorage.getItem("user-id")}/nickname`, {
+            method: 'PATCH',
             headers: {
                 "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
                 "Content-Type":"application/json; charset=utf-8",
             },
-        })
-        .then((response) => response.json())
-        .then((data) => { 
-            if(data){ console.log(data) }
-            else{ alert(data.message) }
-        });*/
-    },[]);
-
-    const handleCheckId = () => {
-        //서버에 아이디만 보내서 중복확인 
-        //중복이면
-        //alert("아이디가 중복됩니다. 다른 아이디로 시도하세요:]")
-        //중복아니면
-        alert("저장버튼을 누르면 해당 아이디로 갱신됩니다")
-        setIsIdChecked(true)
-    }
-    const handleCheckEmail = () => {
-        //db에 요청 -> Email있는지
-        //중복이면
-        //alert("이메일이 중복됩니다. 다른 이메일로 시도하세요:]");
-        //중복 아니면
-        alert("저장버튼을 누르면 해당 이메일로 갱신됩니다")
-        setIsEmailChecked(true)
-    }
-    const handleCancelBtn = () => {
-        //모든걸 그대로 , 마이 페이지로 오게끔
-        setIsIdChecked(false)
-        setIsEmailChecked(false)
-    }
-
-    const handleSaveBtn = () => {
-        //여기서 새로운 사진, 아이디, 이메일을 서버로 이동
-        if(IsEmailChecked&&IsIdChecked){
-            //서버로 이동
-        }else{
-            alert("중복확인을 해주세요")
+            body: JSON.stringify({
+                newNickname: newId
+                //newImgUrl: newImg
+            })
+            })
+            .then((res) => { 
+                console.log(res)
+                if(res.status === 200) { 
+                    alert("수정 완료! 새로고침 해주세요:) ")
+                    setIsIdChanged(false)
+                    //userName=newId
+                }else{
+                    alert("아이디가 중복됩니다. 다른 아이디로 시도하세요 :)")
+                }
+                return res.json()
+            })
+            .then((data) => { console.log(data.message) });
         }
+       
+    }
+
+    const handleCancelBtn = () => {
+        setIsIdChanged(false)
+        setNewId(name);
+        setNewImg(imgUrl);
     }
     
     const uploadFB = async (e) =>{
-        console.log(e.target.files[0]);
         const uploaded_file = await uploadBytes(
          ref(storage,`photos/${e.target.files[0].name}`
          ),e.target.files[0]
         );
-       ////추가로 url도 긁어볼까요?///
         const file_url = await getDownloadURL(uploaded_file.ref);
-        console.log(file_url);
-        setImgFile(file_url)
-       }
-
-    const saveImgFile = (event) => {
-        //프사 미리보기 -> 외부 사진은 되는데(인터넷) 내컴터는꺼는 안됨...
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-            const base64 = reader.result;
-            if(base64){
-                setImgBase64(base64.toString())
-            }
-        }
-        if( event.target.files[0]){
-            reader.readAsDataURL(event?.target.files[0])
-            setImgFile( event.target.files[0].name )
-            
-        }
+        setNewImg(file_url)
     }
-
 
     return <div className="flex flex-col gap-5 max-h-[500px]">
     <div className="flex gap-4 mt-5">
         <img
-        src={ imgFile ? `${imgFile}`:`/img/logo.png` }
+        src={ newImg ? `${newImg}`:`/img/logo.png` }
         alt='myProfile' 
         className="w-1/3 max-w-[200px] border border-[#DEF0CA] rounded-md"/>
         <div className="flex flex-col">
@@ -165,35 +132,27 @@ const MyPageEDIT:React.FC = () => {
             className="hidden"/>
         </div>
     </div>
-    <form className="flex gap-3">
+    <div className="flex gap-3">
+        <h1 className="flex items-center justify-center w-[50px] text-[#507e1f]">ID</h1>
         <input 
         type="text" 
-        placeholder={userId} 
-        onChange={() => { setIsIdChecked(false) }}
+        placeholder={newId}
+        onChange={(e) => { setIsIdChanged(true); setNewId(e.target.value) }}
         className="MyPageEditInput"/>
-        <button 
-        onClick={handleCheckId}  
-        disabled={ IsIdChecked } 
-        className={ IsIdChecked ? 'CheckSameAfter':'CheckSameBefore'}>
-            중복확인</button>
-    </form>
+    </div>
+    <div className="flex gap-3">
+        <h1 className="flex items-center justify-center w-[50px] text-[#507e1f]">Email</h1>
+        <div className="flex items-center text-[#507e1f] MyPageEditInput">{email}</div>
+    </div>
     
-    <form className="flex gap-3">
-        <input 
-        type="text" 
-        placeholder={email} 
-        onChange={() => { setIsEmailChecked(false) }}
-        disabled={ IsEmailChecked } 
-        className="MyPageEditInput"/>
-        <button 
-        onClick={handleCheckEmail} 
-        disabled={ IsEmailChecked } 
-        className={ IsEmailChecked ? 'CheckSameAfter':'CheckSameBefore'}>
-            중복확인</button>
-    </form>
     <div className="flex justify-evenly mt-5">
-        <button onClick={ handleCancelBtn } className="w-1/3 h-[45px] bg-red-100 text-red-400 rounded-2xl border border-red-100 hover:border-red-400 transition-all">취소</button>
-        <button onClick={ handleSaveBtn } className="w-1/3 bg-[#DEF0CA] text-[#507e1f] rounded-2xl border border-[#DEF0CA] hover:border-[#507e1f] transition-all">저장</button>
+        <button 
+        onClick={ handleCancelBtn } 
+        className="w-1/3 h-[45px] bg-red-100 text-red-400 rounded-2xl border border-red-100 hover:border-red-400 transition-all">취소</button>
+        <button 
+        onClick={ handleSave } 
+        disabled={ newId === name }  
+        className={`w-1/3 h-[45px] rounded-2xl border transition-all ${isIdChanged ? 'bg-green-100 text-green-400 border-green-100 hover:border-green-400':'bg-zinc-100 text-zinc-400 border-zinc-100 hover:border-zinc-400'}`}>저장</button>
     </div>
 </div>
 }
@@ -201,42 +160,54 @@ const MyPageEDIT:React.FC = () => {
 export const MyPage:React.FC = () => {
     const [ userId, setUserId ] = useState<string>('')
     const [ email, setEmail ] = useState<string>('')
+    const [ imgUrl, setImgUrl ] = useState<string>('/img/logo.png')
 
     const [ IsMyRecipe, setIsMyRecipe ] = useState(true)
     const [ IsScrap, setIsScrap ] = useState(false)
     
     useEffect(() => {
-        if(localStorage.getItem("user-nickname")){
-        //user의 정보 받아오기
-        setUserId(localStorage.getItem("user-nickname")!)
-        setEmail("아직 fetch안해서 모름ㅋㅋ")
-        //이 유저의 게시글들 받아서 배열에 저장 하기
-        }
+        //회원정보 조회
+        fetch(`http://tobehome.kro.kr:8080/${localStorage.getItem("user-id")}`, {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { 
+            if(data){ 
+                setUserId(data.nickname)
+                setEmail(data.email)
+                //setImgUrl(data.imageUrl)
+            }
+            else{ alert(data.message) }
+        });
     },[]);
     
     return <div className=" flex flex-col items-center">
 
         <Menu />
 
-        <div className="absolute top-[30px] h-[120px] flex gap-3 w-1/3 min-w-[400px] max-w-[604px] p-3 bg-[#F2F8E9] border border-[#A1BB84] rounded-xl">
-            <img className='bg-zinc-100 rounded-[20px] w-[85px]' alt="myPage" src="/img/guest.png"/>
+        <div className="absolute top-[40px] h-[110px] flex gap-3 w-1/4 min-w-[400px] max-w-[604px] p-3 bg-[#F2F8E9] border border-white rounded-xl">
+            <img className='bg-white rounded-[20px] w-[80px] h-[80px]' alt="myPage" src={`${imgUrl ? imgUrl:'/img/guest.png'}`}/>
             <div className="flex flex-col mt-auto">
-                <h1 className="text-[#507e1f] text-[30px]">{userId}</h1>
-                <h1 className="text-[#B1C799] text-[15px]">{email}</h1>
+                <h1 className="text-[#507e1f] text-[30px] font-semibold">{userId}</h1>
+                <h1 className="text-[#B1C799] text-[15px] font-semibold">{email}</h1>
             </div>
         </div>
         
-        <div className="absolute left-[27%] top-[180px] w-1/2 ">
+        <div className="absolute top-[180px] w-[40%] ">
 
-            <div className="flex bg-white rounded-[30px] w-full h-[120px] text-[30px]">
+            <div className="flex rounded-[30px] w-full h-[120px] text-[30px] gap-[1px]">
                 <button onClick={ () => {setIsMyRecipe(true); setIsScrap(false); } } 
-                    className = {`w-1/3 text-[#507e1f] border-r border-r-[#DEF0CA] hover:font-semibold transition-all ${IsMyRecipe ? 'font-semibold':'font-normal'}`}>
+                    className = {`w-1/3 bg-white text-[#507e1f] border-r border-r-[#DEF0CA] hover:bg-[#F2F8E9] hover:font-semibold rounded-[30px] transition-all ${IsMyRecipe ? 'font-semibold':'font-normal'}`}>
                         MY Recipes</button>
                 <button onClick={ () => {setIsMyRecipe(false); setIsScrap(true); } } 
-                    className={`w-1/3 text-[#507e1f] border-r border-r-[#DEF0CA] hover:font-semibold transition-all ${IsScrap ? 'font-semibold':'font-normal'}`}>
+                    className={`w-1/3 bg-white text-[#507e1f] border-x border-x-[#DEF0CA] hover:bg-[#F2F8E9] hover:font-semibold rounded-[30px] transition-all ${IsScrap ? 'font-semibold':'font-normal'}`}>
                         Scrap</button>
                 <button onClick={ () => {setIsMyRecipe(false); setIsScrap(false); } } 
-                    className={`w-1/3 text-[#507e1f] hover:font-semibold transition-all ${!IsMyRecipe && !IsScrap ? 'font-semibold':'font-normal'}`}>
+                    className={`w-1/3 bg-white text-[#507e1f] border-l border-l-[#DEF0CA] hover:bg-[#F2F8E9] hover:font-semibold rounded-[30px] transition-all ${!IsMyRecipe && !IsScrap ? 'font-semibold':'font-normal'}`}>
                         My Page EDIT</button>
             </div>
 
@@ -245,14 +216,11 @@ export const MyPage:React.FC = () => {
                     <MyRecipePage />
                     :
                     IsScrap ? 
-                        < ScrapPage />
+                    < ScrapPage />
                     : 
-                    //My Page EDIT
-                    < MyPageEDIT />
-                    
+                    < MyPageEDIT name={userId} email={email} imgUrl={imgUrl}/>
                 }
             </div>
         </div>
-
     </div>
 }
