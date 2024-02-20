@@ -123,7 +123,6 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
             });
     }, [])
 
-
     // 스크랩 상태를 변경하는 함수
     const toggleScrapped = () => {
         setIsScrapped(prevScrapped => !prevScrapped);
@@ -154,20 +153,64 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
     );
 };
 
+interface ImagesProps {
+    postid: number;
+}
+
+const Images: React.FC<ImagesProps> = ( { postid } ) => {
+    const [imgCnt,setImgCnt] = useState(0);
+    const [url1,setUrl1] = useState('');
+    const [url2,setUrl2] = useState('');
+    const [url3,setUrl3] = useState('');
+    const [isOne, setIsOne] = useState(true);
+    const [isTwo, setIsTwo] = useState(false);
+    const [isThree, setIsThree] = useState(false);
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${postid}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            if(data.imageUrl) { setImgCnt(1); setUrl1(data.imageUrl) }
+            if(data.imageUrl2) { setImgCnt(2); setUrl2(data.imageUrl2) }
+            if(data.imageUrl3) { setImgCnt(3); setUrl3(data.imageUrl3) }
+        })
+    }, []);
+
+    const toPrev = () => {
+        if(isTwo) {setIsOne(true); setIsTwo(false);}
+        else if(isThree) {setIsTwo(true); setIsThree(false);}
+    }
+
+    const toNext = () => {
+        if(isOne&&imgCnt>1) {setIsTwo(true); setIsOne(false);}
+        else if(isTwo&&imgCnt>2) {setIsThree(true); setIsTwo(false);}
+    }
+
+    return (
+        <div className="flex gap-7 text-[50px] text-[#6C9441]">
+            <button onClick={toPrev}>&lt;</button>
+                {isOne&&<img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isTwo&&<img src={url2} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isThree&&<img src={url3} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+            <button onClick={toNext}>&gt;</button>
+        </div>
+    )
+}
+
 
 export const RecipeDetailPage:React.FC = () => {
-    const [ imgUrls, setImgUrls ] = useState<string[]>([]);
-    var imgCnt;
-    const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
     const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
-    const [ isOne, setIsOne ] = useState(false);
-    const [ isTwo, setIsTwo ] = useState(false);
-    const [ isThree, setIsThree ] = useState(false);
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -199,23 +242,6 @@ export const RecipeDetailPage:React.FC = () => {
     }
 
     useEffect(() => {
-        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
-            method: 'get',
-            headers: {
-                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
-                "Content-Type":"application/json; charset=utf-8"
-            }
-        })
-        .then(res => {return res.json()})
-        .then(data => {
-            setThisRecipe(data);
-            if(data.imageUrl) { imgCnt=1; setIsOne(true); setIsTwo(false); setIsThree(false); }
-            if(data.imageUrl2) { imgCnt=2; setIsOne(false); setIsTwo(true); setIsThree(false); }
-            if(data.imageUrl3) { imgCnt=3; setIsOne(false); setIsTwo(false); setIsThree(true); }
-        })
-    }, []);
-
-    useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
             method: 'get',
             headers: {
@@ -229,6 +255,20 @@ export const RecipeDetailPage:React.FC = () => {
             setIsUpdated(false);
         })
     }, [isUpdated]);
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisRecipe(data);
+        })
+    }, []);
 
     var settings = {
         dots: true,
@@ -246,9 +286,7 @@ export const RecipeDetailPage:React.FC = () => {
             {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                    {isOne && Image1(thisRecipe?.imageUrl!)}
-                    {isTwo && Image2(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!)}
-                    {isThree && Image3(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!, thisRecipe?.imageUrl3!)}
+                    <Images postid={id}/>
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
