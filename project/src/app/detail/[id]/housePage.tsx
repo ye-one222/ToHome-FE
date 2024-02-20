@@ -169,6 +169,7 @@ export const HouseDetailPage:React.FC = () => {
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
     const [ relRecipes, setRelRecipes ] = useState<RelRecipe[]>([]);
+    const [ userInfo, setUserInfo ] = useState<UserData>();
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -225,6 +226,13 @@ export const HouseDetailPage:React.FC = () => {
         .then(data => {
             setThisHouse(data);
             setRelRecipes(data.rel);
+            fetch(`http://tobehome.kro.kr:8080/${data.userId}`, {
+                method: 'get',
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setUserInfo(data);
+            })
         })
     }, []);
 
@@ -269,13 +277,11 @@ export const HouseDetailPage:React.FC = () => {
                 <div className="mt-2 flex items-center justify-end gap-1">
                     <div className="flex-col">
                         <div className="text-right text-[13px] text-[#000000b2]">made by</div>
-                        <div className="text-right text-[17px] text-[#000000b2]">{thisHouse?.userId}</div>
+                        <div className="text-right text-[17px] text-[#000000b2]">{userInfo?.nickname}</div>
                     </div>
-                    <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
-                        {/* 사진 자리 - 나중에 이걸로 교체
-                        <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
-                        */}
-                    </div>
+                    <Link to={`/guest/${userInfo?.id}`}>
+                        <img src={userInfo?.imageUrl} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
+                    </Link>
                     <ScrapButton postid={id}/>
                     
                 </div>
