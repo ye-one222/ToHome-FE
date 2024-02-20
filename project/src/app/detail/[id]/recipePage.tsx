@@ -41,8 +41,33 @@ const CommentComponent = ( { name, comment } ) => {
     )
 }
 
+const Images = ( arr:string[] ) => {
+    const length = arr.length;
+    const refinedImgUrls = arr.slice(0,length);
+
+    var settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+    };
+
+    return (
+        <Slider {...settings} className="DetailSliderCSS">
+            {refinedImgUrls.map((url, index) => {
+                return (
+                    <img key={index} src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
+                )
+            })}
+        </Slider>
+    )
+}
+
 export const RecipeDetailPage:React.FC = () => {
-    const imgUrl = ['/img/logo.png', '/img/hand.png']
+    const [ imgUrls, setImgUrls ] = useState<string[]>([]);
+    const [ imgCnt, setImgCnt ] = useState<number>(0);
     const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
@@ -50,6 +75,7 @@ export const RecipeDetailPage:React.FC = () => {
     const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
+    const [ isDone, setIsDone ] = useState(false)
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -91,6 +117,19 @@ export const RecipeDetailPage:React.FC = () => {
         .then(res => {return res.json()})
         .then(data => {
             setThisRecipe(data);
+            if (data.imageUrl && !imgUrls.includes(data.imageUrl)) {
+                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl]);
+                setImgCnt(1);
+            }
+            if (data.imageUrl2 && !imgUrls.includes(data.imageUrl2)) {
+                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl2]);
+                setImgCnt(2);
+            }
+            if (data.imageUrl3 && !imgUrls.includes(data.imageUrl3)) {
+                setImgUrls((prevImgUrls) => [...prevImgUrls, data.imageUrl3]);
+                setImgCnt(3);
+            }            
+            console.log("imgurl:",imgUrls);
         })
     }, []);
 
@@ -109,6 +148,12 @@ export const RecipeDetailPage:React.FC = () => {
         })
     }, [isUpdated]);
 
+    useEffect(() => {
+        if (imgUrls.length === imgCnt*2) { //아니 왜 2번씩 저장되는지 이유를 모르겠네
+            setIsDone(true);
+        }
+    }, [imgUrls]);
+
     var settings = {
         dots: true,
         infinite: true,
@@ -117,7 +162,7 @@ export const RecipeDetailPage:React.FC = () => {
         slidesToScroll: 1,
         arrows: false,
     };
-
+    
     return (
         <div className="flex flex-col items-center">
             <Menu/>
@@ -125,13 +170,7 @@ export const RecipeDetailPage:React.FC = () => {
             {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                    <Slider {...settings} className="DetailSliderCSS">
-                        {imgUrl.map((url, index) => {
-                            return (
-                                <img key={index} src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-                            )
-                        })}
-                    </Slider>
+                {Images (imgUrls)}
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
@@ -141,7 +180,7 @@ export const RecipeDetailPage:React.FC = () => {
                     </div>
                     <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
                         {/* 사진 자리 - 나중에 이걸로 교체
-                        <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
+                        <img src={thisRecipe.} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
                         */}
                     </div>
                     {IsScrapped? 
