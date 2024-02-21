@@ -4,6 +4,7 @@ import { Menu } from "../interface/menu.tsx";
 import { ListData } from '../interface/ListData.tsx';
 import { Link } from "react-router-dom";
 import { PostData } from "../interface/PostData.tsx";
+import { UserData } from "../interface/UserData.tsx";
 
 const TopCard = ( {id} ) => {
     const [ userId, setUserId ] = useState<string>('')
@@ -106,7 +107,9 @@ const TopCard = ( {id} ) => {
 }
 
 const RecipeCard = ({ post_id, title, username }) => {
-    const [ thisRecipe, setThisRecipe ] = useState<PostData>()
+    const [ thisRecipe, setThisRecipe ] = useState<PostData>();
+    const [ userInfo, setUserInfo ] = useState<UserData>();
+    
     useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/${post_id}`, {
             method: 'GET',
@@ -119,6 +122,14 @@ const RecipeCard = ({ post_id, title, username }) => {
         .then((data) => { 
             if(data){ setThisRecipe(data); }
             else{ alert(data.message) }
+
+            fetch(`http://tobehome.kro.kr:8080/${data.userId}`, {
+                method: 'get',
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setUserInfo(data);
+            })
         });
     },[])
     
@@ -128,7 +139,7 @@ const RecipeCard = ({ post_id, title, username }) => {
             <img src={thisRecipe?.imageUrl} alt="imge" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex whitespace-nowrap justify-between items-end">
                 <h1 className="w-[132px] text-[20px] text-left text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[17px] text-right text-[#00000080] overflow-hidden">{username}</div>
+                <div className="w-[80px] text-[17px] text-right text-[#00000080] overflow-hidden">{userInfo?.nickname}</div>
             </div>
         </div>
         </Link>
@@ -157,7 +168,6 @@ export const MainPage:React.FC = ()=>{
                     )
                 }
             })
-            
         })
     }, []);
 

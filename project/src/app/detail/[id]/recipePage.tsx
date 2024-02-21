@@ -1,22 +1,51 @@
 import React, { useEffect, useState } from "react"
 import { Menu } from "../../../interface/menu.tsx"
-import { useParams } from "react-router-dom"
-import Slider from "react-slick";
+import { Link, useParams } from "react-router-dom"
 import { PostData } from "../../../interface/PostData.tsx";
 import { CommentData } from "../../../interface/CommentData.tsx";
+import { UserData } from "../../../interface/UserData.tsx";
 
 type RecipDetailPageParams = {
     id: string
 }
 
 const UsedCategory = (type: string, category: number|undefined) => {
+    const [ allSource, setAllSource ] = useState<{id:Number, name:string}[]>([])
+    const [ allFurniture, setAllFurniture ] = useState<{id:Number, name:string}[]>([])
+
+    useEffect(() => {
+        //재료 카테고리 목록 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/material', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { setAllSource(data) });
+        //가구 카테고리 목록 전체 조회
+        fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
+            method: 'GET',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => { setAllFurniture(data) });
+    })
+
+    const mySource = allSource.find((each) => each.id === category)
+    const myFurniture = allFurniture.find((each) => each.id === category)
+
     return (
         <div className={`mt-10 ${type==="가구 종류"? 'bg-[#DEF0CA]' : 'bg-[#F8FBF4]'} rounded-[30px] border-b border-b-[#73974C] p-10`}>
             <h1 className="text-[30px] text-[#507E1F]">{type}</h1>
             <div className="flex overflow-x-auto min-h-[40px]">
                 {type==="가구 종류"? 
-                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
-                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{category}</div>
+                <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{myFurniture?.name}</div>
+                 : <div className="w-[75px] h-[40px] bg-[#6c9441] text-[13px] text-center text-white rounded-[30px] p-2">{mySource?.name}</div>
                 }
             </div>
         </div>
@@ -37,61 +66,6 @@ const CommentComponent = ( { name, comment } ) => {
             <div className="w-2/3 bg-[#A6CE79] text-white text-[16px] rounded-[30px] shadow-md p-5">
                 {comment}
             </div>
-        </div>
-    )
-}
-
-const Image1 = ( url: string ) => {
-    return (
-        <div>
-            <img src={url} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-        </div>
-    )
-}
-
-const Image2 = ( url1: string, url2: string ) => {
-    const urls = [ url1, url2 ];
-    var index = 0;
-
-    const toPrevImg = () => {
-        if(index===0) { }
-        else if(index===1) { index=0; }
-    }
-
-    const toNextImg = () => {
-        if(index===0) { index=1; }
-        else if(index===1) { }
-    }
-
-    return (
-        <div>
-            <button onClick={toPrevImg}>left</button>
-                <img src={urls[index]} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-            <button onClick={toNextImg}>right</button>
-        </div>
-    )
-}
-
-const Image3 = ( url1: string, url2: string, url3: string ) => {
-    const [ thisUrl, setThisUrl ] = useState<string>('');
-
-    const toPrevImg = () => {
-        if(thisUrl===url1) { }
-        else if(thisUrl===url2) { setThisUrl(url1); }
-        else if(thisUrl===url3) { setThisUrl(url2); }
-    }
-
-    const toNextImg = () => {
-        if(thisUrl===url1) { setThisUrl(url2); }
-        else if(thisUrl===url2) { setThisUrl(url3); }
-        else if(thisUrl===url3) { }
-    }
-
-    return (
-        <div>
-            <button onClick={toPrevImg}>left</button>
-                <img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />
-            <button onClick={toNextImg}>right</button>
         </div>
     )
 }
@@ -123,7 +97,6 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
             });
     }, [])
 
-
     // 스크랩 상태를 변경하는 함수
     const toggleScrapped = () => {
         setIsScrapped(prevScrapped => !prevScrapped);
@@ -154,20 +127,64 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
     );
 };
 
+interface ImagesProps {
+    postid: number;
+}
+
+const Images: React.FC<ImagesProps> = ( { postid } ) => {
+    const [imgCnt,setImgCnt] = useState(0);
+    const [url1,setUrl1] = useState('');
+    const [url2,setUrl2] = useState('');
+    const [url3,setUrl3] = useState('');
+    const [isOne, setIsOne] = useState(true);
+    const [isTwo, setIsTwo] = useState(false);
+    const [isThree, setIsThree] = useState(false);
+
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${postid}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            if(data.imageUrl) { setImgCnt(1); setUrl1(data.imageUrl) }
+            if(data.imageUrl2) { setImgCnt(2); setUrl2(data.imageUrl2) }
+            if(data.imageUrl3) { setImgCnt(3); setUrl3(data.imageUrl3) }
+        })
+    }, []);
+
+    const toPrev = () => {
+        if(isTwo) {setIsOne(true); setIsTwo(false);}
+        else if(isThree) {setIsTwo(true); setIsThree(false);}
+    }
+
+    const toNext = () => {
+        if(isOne&&imgCnt>1) {setIsTwo(true); setIsOne(false);}
+        else if(isTwo&&imgCnt>2) {setIsThree(true); setIsTwo(false);}
+    }
+
+    return (
+        <div className="flex gap-7 text-[50px] text-[#6C9441]">
+            <button onClick={toPrev}>&lt;</button>
+                {isOne&&<img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isTwo&&<img src={url2} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isThree&&<img src={url3} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+            <button onClick={toNext}>&gt;</button>
+        </div>
+    )
+}
 
 export const RecipeDetailPage:React.FC = () => {
-    const [ imgUrls, setImgUrls ] = useState<string[]>([]);
-    var imgCnt;
-    const [ IsScrapped, setIsScrapped ] = useState(false);
     const { id } = useParams<RecipDetailPageParams>();
     const [ isValidComment, setIsValidComment ] = useState(false);
     const [ newComment, setNewComment ] = useState<string>('');
     const [ thisRecipe, setThisRecipe ] = useState<PostData>();
     const [ thisComments, setThisComments ] = useState<CommentData[]>([]);
     const [ isUpdated, setIsUpdated ] = useState(false);
-    const [ isOne, setIsOne ] = useState(false);
-    const [ isTwo, setIsTwo ] = useState(false);
-    const [ isThree, setIsThree ] = useState(false);
+    const [ userInfo, setUserInfo ] = useState<UserData>();
 
     const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
@@ -199,23 +216,6 @@ export const RecipeDetailPage:React.FC = () => {
     }
 
     useEffect(() => {
-        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
-            method: 'get',
-            headers: {
-                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
-                "Content-Type":"application/json; charset=utf-8"
-            }
-        })
-        .then(res => {return res.json()})
-        .then(data => {
-            setThisRecipe(data);
-            if(data.imageUrl) { imgCnt=1; setIsOne(true); setIsTwo(false); setIsThree(false); }
-            if(data.imageUrl2) { imgCnt=2; setIsOne(false); setIsTwo(true); setIsThree(false); }
-            if(data.imageUrl3) { imgCnt=3; setIsOne(false); setIsTwo(false); setIsThree(true); }
-        })
-    }, []);
-
-    useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/${id}/comments`, {
             method: 'get',
             headers: {
@@ -230,14 +230,26 @@ export const RecipeDetailPage:React.FC = () => {
         })
     }, [isUpdated]);
 
-    var settings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-    };
+    useEffect(() => {
+        fetch(`http://tobehome.kro.kr:8080/api/posts/${id}`, {
+            method: 'get',
+            headers: {
+                "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                "Content-Type":"application/json; charset=utf-8"
+            }
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setThisRecipe(data);
+            fetch(`http://tobehome.kro.kr:8080/${data.userId}`, {
+                method: 'get',
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setUserInfo(data);
+            })
+        })
+    }, []);
     
     return (
         <div className="flex flex-col items-center">
@@ -246,23 +258,18 @@ export const RecipeDetailPage:React.FC = () => {
             {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                    {isOne && Image1(thisRecipe?.imageUrl!)}
-                    {isTwo && Image2(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!)}
-                    {isThree && Image3(thisRecipe?.imageUrl!, thisRecipe?.imageUrl2!, thisRecipe?.imageUrl3!)}
+                    <Images postid={id}/>
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
                     <div className="flex-col">
                         <div className="text-right text-[13px] text-[#000000b2]">made by</div>
-                        <div className="text-right text-[17px] text-[#000000b2]">{thisRecipe?.userId}</div>
+                        <div className="text-right text-[17px] text-[#000000b2]">{userInfo?.nickname}</div>
                     </div>
-                    <div className="w-[50px] h-[50px] bg-[#8181811a] rounded-[20px]">
-                        {/* 사진 자리 - 나중에 이걸로 교체
-                        <img src={thisRecipe.} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
-                        */}
-                    </div>
+                    <Link to={`/guest/${userInfo?.id}`}>
+                        <img src={userInfo?.imageUrl} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
+                    </Link>
                     <ScrapButton postid={id}/>
-                    
                 </div>
 
                 <div className="flex flex-col p-5">

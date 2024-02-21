@@ -5,6 +5,7 @@ import { topHouses } from '../interface/topHouses.tsx';
 import Slider from "react-slick";
 import { Link } from "react-router-dom";
 import { PostData } from "../interface/PostData.tsx";
+import { UserData } from "../interface/UserData.tsx";
 
 const TopCard = ( {id} ) => {
     const [ userId, setUserId ] = useState<string>('')
@@ -107,7 +108,9 @@ const TopCard = ( {id} ) => {
 }
 
 const HouseCard = ({ post_id, title, username }) => {
-    const [ thisHouse, setThisHouse ] = useState<PostData>()
+    const [ thisHouse, setThisHouse ] = useState<PostData>();
+    const [ userInfo, setUserInfo ] = useState<UserData>();
+    
     useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/${post_id}`, {
             method: 'GET',
@@ -120,6 +123,14 @@ const HouseCard = ({ post_id, title, username }) => {
         .then((data) => { 
             if(data){ setThisHouse(data) }
             else{ alert(data.message) }
+
+            fetch(`http://tobehome.kro.kr:8080/${data.userId}`, {
+                method: 'get',
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setUserInfo(data);
+            })
         });
     },[])
 
@@ -129,7 +140,7 @@ const HouseCard = ({ post_id, title, username }) => {
             <img src={thisHouse?.imageUrl} alt="Photo" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex justify-between items-end">
                 <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
-                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{username}</div>
+                <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{userInfo?.nickname}</div>
             </div>
         </div>
         </Link>
