@@ -18,9 +18,9 @@ const RecipeCard = ({ post_id, title, username, imgurl }) => {
     return (
         <Link to={`/recipe/${post_id}`}>
         <div className="flex flex-col">
-            <img src={imgurl} alt="Photo" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
+            <img src={imgurl} alt="imgurl" className="w-[230px] h-[230px] rounded-[20px] hover:scale-105 hover:shadow-2xl transition-transform ease-in-out duration-400" />
             <div className="flex justify-between items-end">
-                <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden">{title}</h1>
+                <h1 className="w-[132px] text-[22px] text-left text-black overflow-hidden h-[30px]">{title}</h1>
                 <div className="w-[80px] text-[18px] text-right text-[#00000080] overflow-hidden">{userInfo?.nickname}</div>
             </div>
         </div>
@@ -117,12 +117,12 @@ export const SearchMainPage:React.FC = ()=>{
                         const tagName = matchingTag? matchingTag.name : '';
 
                         return (
-                            <div key={index} className="relative w-[95px] max-w-[95px] bg-[#507E1F] p-2 rounded-[15px] whitespace-nowrap text-white text-center text-[16px]">
+                            <div key={index} className="relative w-[95px] max-w-[95px] bg-[#507E1F] p-2 pr-3 rounded-[15px] whitespace-nowrap text-white text-center text-[16px]">
                                 {tagName}
                                 <button
-                                    className="absolute right-1 text-red-200 hover:text-red-300"
+                                    className="absolute right-1 text-red-200 hover:text-red-300 pr-1"
                                     onClick={() => { setSelectedTags((prevSelectedTags) => { return prevSelectedTags.filter(atag => atag !== matchingTag?.id)}) }}
-                                >X</button>
+                                >x</button>
                             </div>
                         )
                     })}

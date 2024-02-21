@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Menu } from "../../interface/menu.tsx";
 import { MyRecipePage } from "../../interface/myRecipes.tsx";
-import { PostData } from "../../interface/PostData.tsx";
 import { Link } from "react-router-dom";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase.js";
+import { PostData } from "../../interface/PostData.tsx";
+
 
 const ScrapPage:React.FC = () => {
     const [ iLikes, setILikes ] = useState<PostData[]>([])
-
+    const [ likeCount, setLikeCount ] = useState<number[]>([]);
     useEffect(() => {
         fetch(`http://tobehome.kro.kr:8080/api/posts/likedByUser/${localStorage.getItem("user-id")}`, {
             method: 'GET',
@@ -27,10 +28,11 @@ const ScrapPage:React.FC = () => {
     return <div>
     <h1 className="text-[#507e1f] text-[30px]">Scrap: {iLikes.length}</h1>
     <div className="grid grid-cols-3 gap-3 max-h-[500px] overflow-y-auto overflow-x-hidden">
-    {iLikes.map((each) => {
-        let likeCount = 0;
-         //게시글 좋아요 수 조회
-        fetch(`http://tobehome.kro.kr:8080/api/posts/${each.id}/likeCount`, {
+    {
+    iLikes.map((each, index) => {
+        
+        //게시글 좋아요 수 조회
+        /*fetch(`http://tobehome.kro.kr:8080/api/posts/${each.id}/likeCount`, {
             method: 'GET',
             headers: {
                 "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
@@ -39,21 +41,21 @@ const ScrapPage:React.FC = () => {
         })
         .then((response) => response.json())
         .then((data) => { 
-            if(data){ likeCount = data }
-            else{/* alert(data.message) */}
-        });
+            if(data){ setLikeCount(prev=> [...prev, data]) }
+            
+        });*/
 
         return (
-        <div>
-            <Link to={`/recipe/${each.id}`}> 
-            <img className='w-[260px] bg-zinc-100 rounded-[20px]' src={each.imageUrl} alt={each.title}/>
-            <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
-                <h1 className="text-[#507e1f] max-w-[180px] overflow-hidden">{each.title}</h1>
-                <div className="flex flex-row ml-auto">
-                <img className='w-[23px]' src="/img/heart.png" alt="heart"/>
-                <h1 className="text-[#507e1f] text-[15px]">{likeCount}</h1>
+            <div className="flex items-center justify-center bg-white rounded-[20px] h-[250px]">
+            <Link to={`/${each.type === 'product' ? 'recipe':'house'}/${each.id}`}> 
+                <img className='w-[260px] bg-zinc-100 rounded-[20px] max-h-[200px]' src={each.imageUrl} alt={each.title}/>
+                <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
+                    <h1 className="text-[#507e1f] max-w-[180px] overflow-hidden">{each.title}</h1>
+                    <div className="flex flex-row ml-auto">
+                    <img className='w-[23px]' src="/img/heart.png" alt="heart"/>
+                    
+                    </div>
                 </div>
-            </div>
             </Link>
         </div>)
     })}

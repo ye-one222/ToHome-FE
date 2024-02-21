@@ -30,18 +30,18 @@ export const MyRecipePage:React.FC<{userId:string}> = ( {userId}) => {
         })
         .then((response) => response.json())
         .then((data) => { 
-            if(data.id){ setILikes(data.id) }
+            if(data){ data.map((each)=> setILikes(prev => [...prev, each.id])) }
         });
     },[]);
-
+    
     return <div>
     
     <h1 className="text-[#507e1f] text-[30px] ">Recipes: {myRecipes.length}</h1>
     <div className="grid grid-cols-3 gap-3 max-h-[500px] overflow-y-auto overflow-x-hidden">
     
-    { myRecipes.map((each) => {
-        let likeCount = 0;
+    { myRecipes.map((each, index) => {
         //게시글 좋아요 수 조회
+        /*
         fetch(`http://tobehome.kro.kr:8080/api/posts/${each.id}/likeCount`, {
             method: 'GET',
             headers: {
@@ -51,11 +51,13 @@ export const MyRecipePage:React.FC<{userId:string}> = ( {userId}) => {
         })
         .then((response) => response.json())
         .then((data) => { 
-            if(data){ likeCount = data }
+            if(data){  }
         });
+        */
+
         return (
         <div className="flex items-center justify-center bg-white rounded-[20px] h-[250px]">
-            <Link to={`/recipe/${each.id}`}> 
+            <Link to={`/${each.type === 'product' ? 'recipe':'house'}/${each.id}`}> 
             <div>
                 <img className='rounded-[20px] max-h-[200px]' src={each.imageUrl} alt={each.title}/></div>
             <div className="max-h-[24px] max-w-[260px] ml-2 flex flex-row">
@@ -65,7 +67,6 @@ export const MyRecipePage:React.FC<{userId:string}> = ( {userId}) => {
                         <img className='w-[23px]' src="/img/heart.png" alt="heart"/>:
                         <img className='w-[23px]' src="/img/emptyHeart.png" alt="emptyHeart"/>
                     }
-                    <h1 className="text-[#507e1f] text-[15px]">{likeCount}</h1>
                 </div>
             </div>
             </Link>
