@@ -23,7 +23,7 @@ const UsedCategory = (type: string, category: number|undefined) => {
             },
         })
         .then((response) => response.json())
-        .then((data) => { setAllSource(data) });
+        .then((data) => { console.log(data); setAllSource(data) });
         //가구 카테고리 목록 전체 조회
         fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
             method: 'GET',
@@ -34,7 +34,7 @@ const UsedCategory = (type: string, category: number|undefined) => {
         })
         .then((response) => response.json())
         .then((data) => { setAllFurniture(data) });
-    })
+    }, [])
 
     const mySource = allSource.find((each) => each.id === category)
     const myFurniture = allFurniture.find((each) => each.id === category)
@@ -53,17 +53,27 @@ const UsedCategory = (type: string, category: number|undefined) => {
 }
 
 const CommentComponent = ( { name, comment } ) => {
+    const [userInfo, setUserInfo] = useState<UserData>();
+
+    useEffect(()=>{
+        fetch(`http://tobehome.kro.kr:8080/${name}`, {
+            method: 'get',
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setUserInfo(data);
+        })
+    },[])
+
     return (
         <div className="flex gap-5 mb-8">
+            <Link to={`/guest/${userInfo?.id}`}>
             <div className="flex flex-col items-center w-[100px]">
-                <div className="w-[64px] h-[64px] bg-[#8181811a] rounded-[20px]">
-                    {/* 사진 자리 - 나중에 이걸로 교체
-                    <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
-                    */}
-                </div>
-                <p>{name}</p>
+                <img src={userInfo?.imageUrl} alt="Photo" className="w-[64px] h-[64px] rounded-[20px]" />
+                <p>{userInfo?.nickname}</p>
             </div>
-            <div className="w-2/3 bg-[#6C7E59] text-white text-[16px] rounded-[30px] shadow-md p-5">
+            </Link>
+            <div className="w-2/3 bg-[#A6CE79] text-white text-[16px] rounded-[30px] shadow-md p-5">
                 {comment}
             </div>
         </div>
@@ -71,7 +81,7 @@ const CommentComponent = ( { name, comment } ) => {
 }
 
 interface ScrapButtonProps {
-    postid: number;
+    postid: string;
 }
 
 const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
@@ -90,7 +100,7 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
             .then((data) => {
                 if (data) {
                     setILikes(data);
-                    setIsScrapped(data.some(n => n.id-postid===0));
+                    setIsScrapped(data.some(n => n.id-parseInt(postid)===0));
                 } else {
                     /*alert(data.message)*/
                 }
@@ -128,11 +138,10 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
 };
 
 interface ImagesProps {
-    postid: number;
+    postid: string|undefined;
 }
 
 const Images: React.FC<ImagesProps> = ( { postid } ) => {
-    const [imgCnt,setImgCnt] = useState(0);
     const [url1,setUrl1] = useState('');
 
     useEffect(() => {
@@ -312,7 +321,7 @@ export const HouseDetailPage:React.FC = () => {
                     <Link to={`/guest/${userInfo?.id}`}>
                         <img src={userInfo?.imageUrl} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
                     </Link>
-                    <ScrapButton postid={id}/>
+                    <ScrapButton postid={id!}/>
                     
                 </div>
 

@@ -81,7 +81,9 @@ export const PostPage:React.FC = () => {
             },
         })
         .then((response) => response.json())
-        .then((data) => { setILikes(data) });
+        .then((data) => {
+            setILikes(data.filter(post => post.type==="product")); 
+        });
     },[]);
     
     //post 
@@ -362,7 +364,7 @@ export const PostPage:React.FC = () => {
                         <div className="-mt-3 grid grid-cols-4 w-full p-4 gap-2 border border-[#507E1F] rounded-[30px] max-h-[270px] overflow-y-auto">
                             {iLikes.map((each) => { 
                                 return <div onClick={() => { handleGoodsClick(each) } } className="flex flex-col gap-1">
-                                    <img src="/img/logo.png" alt="post" className="max-w-[100px] bg-zinc-100 rounded-[30px]"/>
+                                    <img src={each.imageUrl} alt="post" className="max-w-[100px] max-h-[100px] bg-zinc-100 rounded-[30px]"/>
                                     <h1 className="text-[10px]">{each.title}</h1>
                                 </div>})
                             }
