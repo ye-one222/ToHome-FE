@@ -23,7 +23,7 @@ const UsedCategory = (type: string, category: number|undefined) => {
             },
         })
         .then((response) => {console.log(response);return response.json()})
-        .then((data) => { console.log(data);setAllSource(data) });
+        .then((data) => { setAllSource(data) });
         //가구 카테고리 목록 전체 조회
         fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
             method: 'GET',
@@ -53,16 +53,26 @@ const UsedCategory = (type: string, category: number|undefined) => {
 }
 
 const CommentComponent = ( { name, comment } ) => {
+    const [userInfo, setUserInfo] = useState<UserData>();
+
+    useEffect(()=>{
+        fetch(`http://tobehome.kro.kr:8080/${name}`, {
+            method: 'get',
+        })
+        .then(res => {return res.json()})
+        .then(data => {
+            setUserInfo(data);
+        })
+    },[])
+
     return (
         <div className="flex gap-5 mb-8">
+            <Link to={`/guest/${userInfo?.id}`}>
             <div className="flex flex-col items-center w-[100px]">
-                <div className="w-[64px] h-[64px] bg-[#8181811a] rounded-[20px]">
-                    {/* 사진 자리 - 나중에 이걸로 교체
-                    <img src={??뭘로해야할까??} alt="Photo" className="w-[67px] h-[67px] rounded-[20px]" />
-                    */}
-                </div>
-                <p>{name}</p>
+                <img src={userInfo?.imageUrl} alt="Photo" className="w-[64px] h-[64px] rounded-[20px]" />
+                <p>{userInfo?.nickname}</p>
             </div>
+            </Link>
             <div className="w-2/3 bg-[#A6CE79] text-white text-[16px] rounded-[30px] shadow-md p-5">
                 {comment}
             </div>
