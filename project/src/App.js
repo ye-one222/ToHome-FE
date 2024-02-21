@@ -4,7 +4,8 @@ import { HomeRouter } from './router/index.tsx';
 function App() {
   return (
     <div className="MainCSS">
-      <HomeRouter />
+      
+        <HomeRouter />
     </div>
   );
 }
