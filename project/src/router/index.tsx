@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router-dom'
 import React from "react";
 import { MainPage } from "../app/main.tsx"
 import { MyPage } from "../app/person/myPage.tsx"
@@ -11,7 +11,7 @@ import { RecipeDetailPage } from '../app/detail/[id]/recipePage.tsx';
 import { HouseDetailPage } from '../app/detail/[id]/housePage.tsx';
 import { GuestProfilePage } from '../app/person/guest.tsx';
 
-export type HomeRouterPath = '/' | '/download' 
+export type HomeRouterPath = '/' | '/mypage'|'/login'|'/signup'|'/house'|'/search'|'/post'|'/recipe/:id'|'/house/:id'|'/guest/:id'
 const homeRouter = createBrowserRouter([
     {
         path: '/',
@@ -56,5 +56,5 @@ const homeRouter = createBrowserRouter([
 ])
 
 // eslint-disable-next-line react/jsx-no-undef
-export const HomeRouter = () => <RouterProvider router={homeRouter} />
+export const HomeRouter = () => <BrowserRouter basename={process.env.PUBLIC_URL}><RouterProvider router={homeRouter} /></BrowserRouter>
 
