@@ -56,5 +56,5 @@ const homeRouter = createBrowserRouter([
 ])
 
 // eslint-disable-next-line react/jsx-no-undef
-export const HomeRouter = () => <BrowserRouter basename={process.env.PUBLIC_URL}><RouterProvider router={homeRouter} /></BrowserRouter>
+export const HomeRouter = () => <RouterProvider router={homeRouter} />
 
