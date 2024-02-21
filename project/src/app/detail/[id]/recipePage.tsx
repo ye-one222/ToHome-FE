@@ -10,8 +10,8 @@ type RecipDetailPageParams = {
 }
 
 const UsedCategory = (type: string, category: number|undefined) => {
-    const [ allSource, setAllSource ] = useState<{id:Number, name:string}[]>([])
-    const [ allFurniture, setAllFurniture ] = useState<{id:Number, name:string}[]>([])
+    const [ allSource, setAllSource ] = useState<{id:number, name:string}[]>([])
+    const [ allFurniture, setAllFurniture ] = useState<{id:number, name:string}[]>([])
 
     useEffect(() => {
         //재료 카테고리 목록 조회
@@ -22,8 +22,8 @@ const UsedCategory = (type: string, category: number|undefined) => {
                 "Content-Type":"application/json; charset=utf-8",
             },
         })
-        .then((response) => response.json())
-        .then((data) => { setAllSource(data) });
+        .then((response) => {console.log(response);return response.json()})
+        .then((data) => { console.log(data);setAllSource(data) });
         //가구 카테고리 목록 전체 조회
         fetch('http://tobehome.kro.kr:8080/api/categories/furniture', {
             method: 'GET',
@@ -34,7 +34,7 @@ const UsedCategory = (type: string, category: number|undefined) => {
         })
         .then((response) => response.json())
         .then((data) => { setAllFurniture(data) });
-    })
+    },[])
 
     const mySource = allSource.find((each) => each.id === category)
     const myFurniture = allFurniture.find((each) => each.id === category)
@@ -71,11 +71,11 @@ const CommentComponent = ( { name, comment } ) => {
 }
 
 interface ScrapButtonProps {
-    postid: number;
+    postid: string;
 }
 
 const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
-    const [iLikes, setILikes] = useState<PostData[]>([]);
+    //const [iLikes, setILikes] = useState<PostData[]>([]);
     const [isScrapped, setIsScrapped] = useState(false); // 스크랩 여부 상태 추가
 
     useEffect(() => {
@@ -89,8 +89,8 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
             .then((response) => response.json())
             .then((data) => {
                 if (data) {
-                    setILikes(data);
-                    setIsScrapped(data.some(n => n.id-postid===0));
+                    //setILikes(data);
+                    setIsScrapped(data.some(n => n.id-parseInt(postid)===0));
                 } else {
                     /*alert(data.message)*/
                 }
@@ -128,7 +128,7 @@ const ScrapButton: React.FC<ScrapButtonProps> = ( { postid } ) => {
 };
 
 interface ImagesProps {
-    postid: number;
+    postid: string;
 }
 
 const Images: React.FC<ImagesProps> = ( { postid } ) => {
@@ -169,9 +169,9 @@ const Images: React.FC<ImagesProps> = ( { postid } ) => {
     return (
         <div className="flex gap-7 text-[50px] text-[#6C9441]">
             <button onClick={toPrev}>&lt;</button>
-                {isOne&&<img src={url1} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
-                {isTwo&&<img src={url2} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
-                {isThree&&<img src={url3} alt="Photo" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isOne&&<img src={url1} alt="url" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isTwo&&<img src={url2} alt="url" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
+                {isThree&&<img src={url3} alt="url" className="max-w-[512px] max-h-[512px] rounded-[52px]" />}
             <button onClick={toNext}>&gt;</button>
         </div>
     )
@@ -258,7 +258,7 @@ export const RecipeDetailPage:React.FC = () => {
             {/* 본문 */}
             <div className="flex-col justify-center mt-4 w-[650px] min-h-[700px] bg-[#ffffffb2] rounded-[52px] p-6">
                 <div className="flex items-center justify-center gap-10">
-                    <Images postid={id}/>
+                    <Images postid={id!}/>
                 </div>
 
                 <div className="mt-2 flex items-center justify-end gap-1">
@@ -267,9 +267,9 @@ export const RecipeDetailPage:React.FC = () => {
                         <div className="text-right text-[17px] text-[#000000b2]">{userInfo?.nickname}</div>
                     </div>
                     <Link to={`/guest/${userInfo?.id}`}>
-                        <img src={userInfo?.imageUrl} alt="Photo" className="w-[50px] h-[50px] rounded-[20px]" />
+                        <img src={userInfo?.imageUrl} alt="url" className="w-[50px] h-[50px] rounded-[20px]" />
                     </Link>
-                    <ScrapButton postid={id}/>
+                    <ScrapButton postid={id!}/>
                 </div>
 
                 <div className="flex flex-col p-5">

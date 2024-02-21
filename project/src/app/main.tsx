@@ -45,7 +45,7 @@ const TopCard = ( {id} ) => {
         })
         .then(res => {return res.json()})
         .then(data => {
-            setThisRecipe(data);
+            setThisRecipe(data);    console.log("recipe id: ",id,data)
             setGuestId(data.userId)
              fetch(`http://tobehome.kro.kr:8080/${data.userId}`, {
                 method: 'GET',
@@ -67,9 +67,9 @@ const TopCard = ( {id} ) => {
     //재료 이름 받아오기
     const yourSource = allSource.find((each) => each.id === thisRecipe?.materialCategory)
     const yourFurniture = allFurniture.find((each) => each.id === thisRecipe?.furnitureCategory)
-
+    
     return (
-        <Link to={`/recipe/${id}`}><div className="flex items-center w-[700px] h-[480px] bg-[#ffffffb2] rounded-[52px] p-5 gap-4">
+        <Link to={`/recipe/${thisRecipe?.id}`}><div className="flex items-center w-[700px] h-[480px] bg-[#ffffffb2] rounded-[52px] p-5 gap-4">
             <div className="flex items-center justify-center w-[371px] h-[371px] rounded-[52px]">
                 <img src={thisRecipe?.imageUrl} alt="topPhotos" className="w-[482px] max-h-[382px] rounded-[52px]" /> 
             </div>
@@ -172,7 +172,7 @@ export const MainPage:React.FC = ()=>{
     }, []);
 
     const top5RecipesId = [...allPostId].sort(() => Math.random() - 0.5).slice(0, 5)
-     
+     console.log(top5RecipesId)
     return (
     <div className="flex flex-col items-center">
         <Menu/>
@@ -181,6 +181,7 @@ export const MainPage:React.FC = ()=>{
         <div className="flex mt-10 items-center gap-2 w-[700px] overflow-x-auto">
             
             {top5RecipesId.map((each, index) => {
+                console.log("top5 id:",each);
                 return (
                     <TopCard key={index} id={each}/>
                 )
