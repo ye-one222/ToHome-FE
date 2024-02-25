@@ -1,4 +1,5 @@
 {
+  "homepage": "https://jeongbowoon.github.io/ToHome-FE/",
   "name": "project",
   "version": "0.1.0",
   "private": true,
@@ -23,7 +24,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build", 
+    "deploy": "gh-pages -d build"  
   },
   "eslintConfig": {
     "extends": [
@@ -46,10 +49,10 @@
   "devDependencies": {
     "autoprefixer": "^10.4.17",
     "css-loader": "^6.9.1",
+    "gh-pages": "^6.1.1",
     "postcss": "^8.4.33",
     "postcss-loader": "^8.0.0",
     "style-loader": "^3.3.4",
     "tailwindcss": "^3.4.1"
-  },
-  "homepage": "https://ye-one222.github.io"
+  }
 }

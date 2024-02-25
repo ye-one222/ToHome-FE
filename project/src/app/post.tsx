@@ -72,8 +72,8 @@ export const PostPage:React.FC = () => {
         })
         .then((response) => response.json())
         .then((data) => { setbestFurniture(data) });
-        //내가 좋아요한 게시글들 조회 - 일단 내가 만든 게시글로!!!(없어서 ㅜㅠㅠ)
-        fetch(`http://tobehome.kro.kr:8080/api/posts/user/${localStorage.getItem("user-id")}`, {
+        //내가 좋아요한 게시글들 조
+        fetch(`http://tobehome.kro.kr:8080/api/posts/likedByUser/${localStorage.getItem("user-id")}`, {
             method: 'GET',
             headers: {
                 "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
@@ -245,6 +245,20 @@ export const PostPage:React.FC = () => {
    
     const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId }) => {
         const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
+        const [ thisRecipe, setThisRecipe ] = useState<PostData>()
+        useEffect(()=>{
+            fetch(`http://tobehome.kro.kr:8080/api/posts/${postId}`, {
+                method: 'get',
+                headers: {
+                    "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                    "Content-Type":"application/json; charset=utf-8"
+                }
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setThisRecipe(data)
+            })
+        },[])
     
         return <div>
             <button 
@@ -258,12 +272,26 @@ export const PostPage:React.FC = () => {
             onMouseLeave={() => {  setGoodsBtnClick(false) }}
             style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
             className="flex bg-white border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3">
-                <h1>{postId}</h1>
+                <h1>{thisRecipe?.title}</h1>
             </div>}
         </div>
     }
     
     const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId}) => {
+        const [ thisRecipe, setThisRecipe ] = useState<PostData>()
+        useEffect(()=>{
+            fetch(`http://tobehome.kro.kr:8080/api/posts/${postId}`, {
+                method: 'get',
+                headers: {
+                    "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
+                    "Content-Type":"application/json; charset=utf-8"
+                }
+            })
+            .then(res => {return res.json()})
+            .then(data => {
+                setThisRecipe(data)
+            })
+        },[])
 
         const handleDeleteGoods = () => {
             setGoodsBtn(goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y))
@@ -278,7 +306,7 @@ export const PostPage:React.FC = () => {
                 -</button>
             <div className="flex gap-5 pl-5 bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-2">
                 <img src="/img/logo.png" alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
-                <h1 className="flex items-center justify-center text-[#507E1F] text-[20px]">{postId}</h1>
+                <h1 className="flex items-center justify-center text-[#507E1F] text-[20px]">{thisRecipe?.title}</h1>
             </div>
         </div>
     }
