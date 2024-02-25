@@ -10,6 +10,8 @@ interface goodsBtnType {
     x: number;
     y: number;
     postId: number;
+    title: string;
+    imgUrl: string;
 }
 
 export const PostPage:React.FC = () => {
@@ -35,7 +37,6 @@ export const PostPage:React.FC = () => {
     const [ IsHouse, setIsHouse ] = useState(false);
     
     const [ photosSrc, setPhotosSrc ] = useState<string[]>([])
-    const [ imgBase64, setImgBase64 ] = useState('')
     
     const [ Source, setSource ] = useState<string|null>(null)//
     const [ addSourceInput, setAddSourceInput ] = useState<string>('')
@@ -50,6 +51,8 @@ export const PostPage:React.FC = () => {
     const [ addGoodsClick, setAddGoodsClick ] = useState(false)
     const [ xy, setXY ] = useState({x:0, y:0})
     const [ goodsPostId, setGoodsPostId ] = useState<number|null>(null)
+    const [ goodsTitle, setGoodsTitle ] = useState<string>('')
+    const [ goodsImgUrl, setGoodsImgUrl ] = useState<string>('')
 
     useEffect(() => {
         //재료 카테고리 목록 조회
@@ -233,21 +236,8 @@ export const PostPage:React.FC = () => {
     const handlePhotoClick = (event: React.MouseEvent<HTMLImageElement>) => {
         if( goodsPostId )
         {
-            const boundingRect = event.currentTarget.getBoundingClientRect();
-            //console.log(event.clientX, event.clientY)
-            const newBtn:goodsBtnType = { x:event.clientX - boundingRect.left, y:event.clientY - boundingRect.top, postId:goodsPostId }
-            setGoodsBtn([...goodsBtn, newBtn])
-            setGoodsPostId(null)
-            //goodsBtn을 newRecipe.rel에 추가
-            setNewRecipe({...newRecipe, rel:[...newRecipe.rel, {p:newBtn.postId, x:newBtn.x, y: newBtn.y}]} )
-        }
-    }
-   
-    const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId }) => {
-        const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
-        const [ thisRecipe, setThisRecipe ] = useState<PostData>()
-        useEffect(()=>{
-            fetch(`http://tobehome.kro.kr:8080/api/posts/${postId}`, {
+            //여기서 정보 받아오자
+            fetch(`http://tobehome.kro.kr:8080/api/posts/${goodsPostId}`, {
                 method: 'get',
                 headers: {
                     "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
@@ -256,9 +246,25 @@ export const PostPage:React.FC = () => {
             })
             .then(res => {return res.json()})
             .then(data => {
-                setThisRecipe(data)
+                //setThisRecipe(data)
+                setGoodsTitle(data.title)
+                setGoodsImgUrl(data.imageUrl)
             })
-        },[])
+
+            const boundingRect = event.currentTarget.getBoundingClientRect();
+            const newBtn:goodsBtnType = { x:event.clientX - boundingRect.left, y:event.clientY - boundingRect.top, postId:goodsPostId, title:goodsTitle, imgUrl:goodsImgUrl }
+            setGoodsBtn([...goodsBtn, newBtn])
+            setGoodsPostId(null)
+           
+            //goodsBtn을 newRecipe.rel에 추가
+            setNewRecipe({...newRecipe, rel:[...newRecipe.rel, {p:newBtn.postId, x:newBtn.x, y: newBtn.y}]} )
+        }
+    }
+   
+    const GoodsBtnComponent: React.FC<goodsBtnType> = ({ x, y, postId, title, imgUrl }) => {
+        const [ goodsBtnClick, setGoodsBtnClick ] = useState(false)
+        //const [ thisRecipe, setThisRecipe ] = useState<PostData>()
+        
     
         return <div>
             <button 
@@ -272,27 +278,13 @@ export const PostPage:React.FC = () => {
             onMouseLeave={() => {  setGoodsBtnClick(false) }}
             style={{ position: 'absolute', top: y+55 , left: x+40, opacity : 0.8,}} 
             className="flex bg-white border border-dashed border-[#507E1F] rounded-[30px] text-[#507E1F] p-3">
-                <h1>{thisRecipe?.title}</h1>
+                <h1>{title}</h1>
             </div>}
         </div>
     }
     
-    const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId}) => {
-        const [ thisRecipe, setThisRecipe ] = useState<PostData>()
-        useEffect(()=>{
-            fetch(`http://tobehome.kro.kr:8080/api/posts/${postId}`, {
-                method: 'get',
-                headers: {
-                    "Authorization":`Bearer ${localStorage.getItem("login-token")}`,
-                    "Content-Type":"application/json; charset=utf-8"
-                }
-            })
-            .then(res => {return res.json()})
-            .then(data => {
-                setThisRecipe(data)
-            })
-        },[])
-
+    const GoodsLineComponent:React.FC<goodsBtnType> = ({ x, y, postId, title, imgUrl}) => {
+    
         const handleDeleteGoods = () => {
             setGoodsBtn(goodsBtn.filter((each) => each.postId !== postId || each.x !== x || each.y !== y))
             //newRecipe에서도 빼야 함 
@@ -305,8 +297,8 @@ export const PostPage:React.FC = () => {
             className="bg-red-100 border border-[#DC5858] text-[#DC5858] text-[40px] rounded-[50px] h-[60px] w-[60px] hover:bg-red-200 transition-all">
                 -</button>
             <div className="flex gap-5 pl-5 bg-[#ECF6E1] rounded-[30px] border border-[#507E1F] w-full py-2">
-                <img src="/img/logo.png" alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
-                <h1 className="flex items-center justify-center text-[#507E1F] text-[20px]">{thisRecipe?.title}</h1>
+                <img src={imgUrl} alt="postimg" className="w-[50px] h-[50px] bg-zinc-200 rounded-[20px]"/>
+                <h1 className="flex items-center justify-center text-[#507E1F] text-[20px]">{title}</h1>
             </div>
         </div>
     }
@@ -375,7 +367,7 @@ export const PostPage:React.FC = () => {
                     alt="photos" 
                     className="max-w-full max-h-30% rounded-[50px] mb-5"/>
                     <div className="flex flex-col items-center gap-4">
-                        { goodsBtn.map((each, index) => <GoodsLineComponent key={index} x={each.x} y={each.y} postId={each.postId} />) }
+                        { goodsBtn.map((each, index) => <GoodsLineComponent key={index} x={each.x} y={each.y} postId={each.postId} title={each.title} imgUrl={each.imgUrl} />) }
                         <div className="flex items-center justify-center gap-3 w-full">
                             <button 
                             onFocus={() => { setAddGoodsClick(true) }} 
@@ -402,7 +394,7 @@ export const PostPage:React.FC = () => {
                             className="flex items-center justify-center text-white bg-[#507E1F] rounded-[30px] w-5 h-5">
                                 +</div>}
                     </div>
-                    { goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId} />)}
+                    { goodsBtn.map((each,index) =>  <GoodsBtnComponent key={index} x={each.x} y={each.y} postId={each.postId}  title={each.title} imgUrl={each.imgUrl}/>)}
                 </div>:
                 <div >
                     <label
