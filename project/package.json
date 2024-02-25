@@ -10,6 +10,7 @@
     "@types/react-slick": "^0.23.13",
     "core-js": "^3.36.0",
     "firebase": "^10.8.0",
+    "gh-pages": "^6.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.3",
@@ -50,5 +51,5 @@
     "style-loader": "^3.3.4",
     "tailwindcss": "^3.4.1"
   },
-  "homepage": "http://To-Home.com/"
+  "homepage": "https://ye-one222.github.io"
 }
